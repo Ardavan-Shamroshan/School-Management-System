@@ -7,7 +7,6 @@ use App\Models\Academy\Course;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Resources\Components\Tab;
 use Filament\Resources\Concerns\HasTabs;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables;
@@ -18,7 +17,6 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 
@@ -72,7 +70,6 @@ class Dashboard extends BaseDashboard  implements HasForms, HasTable
             ->actions([])
             ->bulkActions([]);
     }
-
 
     protected function getTableQuery(): Builder
     {

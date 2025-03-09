@@ -20,6 +20,15 @@
     font-family: Inter, EstedadFD, IRANSansX, serif;
 }
 
+.fi-main {
+    @apply max-w-full
+}
+
+.fi-ta-ctn .py-4 {
+    padding-top: .5rem !important;
+    padding-bottom: .5rem !important;
+}
+
 .fi-btn {
     padding: .275rem 1.25rem;
     @apply shadow rounded-md
