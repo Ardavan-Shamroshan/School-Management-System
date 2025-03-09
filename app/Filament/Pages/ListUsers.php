@@ -1,26 +1,23 @@
 <?php
 
-namespace App\Filament\Pages\User;
+namespace App\Filament\Pages;
 
 use App\Enums\UserRole;
-use App\Filament\Pages\Dashboard;
 use App\Models\User;
 use Filament\Actions\Action;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Form;
 use Filament\Forms;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Filament\Tables\Table;
-use Filament\Forms\Contracts\HasForms;
-use Filament\Tables\Contracts\HasTable;
-use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Tables\Actions;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
-use Filament\Tables\Actions;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Livewire\Attributes\On;
 
@@ -37,7 +34,6 @@ class ListUsers extends Page implements HasForms, HasTable
     public function mount(): void
     {
         $this->record = new User;
-
 
         $this->form->fill(
             $this->record->toArray()
@@ -147,11 +143,14 @@ class ListUsers extends Page implements HasForms, HasTable
     {
         $data = $this->form->getState();
 
-        $this->record->name     = $data['name'];
-        $this->record->email    = $data['email'];
-        $this->record->mobile   = $data['mobile'];
-        $this->record->password = 'password';
-        $this->record->role     = $data['role'];
+        $this->record->forceFill([
+            'name'     => $data['name'],
+            'email'    => $data['email'],
+            'mobile'   => $data['mobile'],
+            'password' => $data['password'],
+            'role'     => $data['role'],
+        ]);
+
         $this->record->save();
 
         Notification::make('saved')->success()->title(__('Successful'))->send();
@@ -180,13 +179,9 @@ class ListUsers extends Page implements HasForms, HasTable
     public function getBreadcrumbs(): array
     {
         return [
-            Dashboard::getUrl() => 'داشبور',
-            ListUsers::getUrl() => 'کاربران',
-            '0'                 => 'لیست کاربران'
+            Dashboard::getUrl() => __('Dashboard'),
+            ListUsers::getUrl() => __('Users'),
+            '0'                 => __('Users list')
         ];
     }
-
-
-
-
 }

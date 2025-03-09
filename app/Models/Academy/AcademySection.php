@@ -14,7 +14,6 @@ class AcademySection extends Model
     use SoftDeletes, Sluggable;
 
     protected $fillable = ['name', 'image', 'description', 'slug', 'type'];
-    protected $table    = 'academy_sections';
 
     protected function casts(): array
     {

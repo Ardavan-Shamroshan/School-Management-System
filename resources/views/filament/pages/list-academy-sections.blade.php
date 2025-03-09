@@ -6,7 +6,6 @@
         </div>
 
         <x-filament-panels::form class="col-span-1" wire:submit="save">
-{{--            <x-filament-panels::form.actions :actions="$this->getFormActions()"/>--}}
 
             {{ $this->form }}
 

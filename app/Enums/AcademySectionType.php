@@ -2,9 +2,10 @@
 
 namespace App\Enums;
 
+use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
-enum AcademySectionType: int implements HasLabel
+enum AcademySectionType: int implements HasLabel, HasIcon
 {
     case BOYS  = 0;
     case GIRLS = 1;
@@ -16,6 +17,15 @@ enum AcademySectionType: int implements HasLabel
             self::BOYS  => __('Boys'),
             self::GIRLS => __('Girls'),
             self::BOTH  => __('Both'),
+        };
+    }
+
+    public function getIcon(): string
+    {
+        return match ($this) {
+            self::BOYS  => 'heroicon-o-academic-cap',
+            self::GIRLS => 'heroicon-o-academic-cap',
+            self::BOTH  => 'heroicon-o-academic-cap',
         };
     }
 
@@ -33,7 +43,7 @@ enum AcademySectionType: int implements HasLabel
     }
 
     // Display cases as an array
-    
+
     public static function toArray(): array
     {
         return array_column(self::cases(), 'value');

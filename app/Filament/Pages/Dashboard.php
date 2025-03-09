@@ -35,7 +35,7 @@ class Dashboard extends BaseDashboard  implements HasForms, HasTable
             ->query($this->getTableQuery())
             ->defaultPaginationPageOption(50)
             ->contentGrid([
-                'xl' => 6
+                'xl' => 8
             ])
             ->columns([
                 Grid::make()
@@ -45,8 +45,7 @@ class Dashboard extends BaseDashboard  implements HasForms, HasTable
                         Stack::make([
                             TextColumn::make('name')
                                 ->searchable()
-                                ->weight('bold')
-                                ->limit(20)
+                                ->limit(15)
                                 ->wrap(false)
                                 ->tooltip(fn($state) => $state)
                                 ->extraAttributes(['class' => 'justify-center']),

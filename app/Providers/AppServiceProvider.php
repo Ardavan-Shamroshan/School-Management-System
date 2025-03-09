@@ -49,7 +49,6 @@ class AppServiceProvider extends ServiceProvider
         Table::configureUsing(function ($component) {
             $component
                 ->deferLoading()
-                ->deferFilters()
                 ->striped()
                 ->groupingSettingsInDropdownOnDesktop()
                 ->groupingDirectionSettingHidden()
