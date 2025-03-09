@@ -1,0 +1,20 @@
+@font-face {
+    font-family: Estedad;
+    font-style: auto;
+    font-weight: auto;
+    src: url('../assets/fonts/Estedad/Estedad-Variable.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: EstedadFD-Light;
+    font-style: auto;
+    font-weight: normal;
+    src: url('../assets/fonts/Estedad/Estedad-FD-Variable.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: EstedadFD;
+    font-style: auto;
+    font-weight: auto;
+    src: url('../assets/fonts/Estedad/Estedad-FD-Variable.woff2') format('woff2');
+}

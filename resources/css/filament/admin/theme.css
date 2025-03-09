@@ -1,0 +1,60 @@
+@import '/vendor/filament/filament/resources/css/theme.css';
+@import '../../font.css';
+
+
+@config 'tailwind.config.js';
+
+@layer utilities {
+    /* Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .no-scrollbar {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+    }
+}
+
+* {
+    font-family: Inter, EstedadFD, IRANSansX, serif;
+}
+
+.fi-btn {
+    padding: .275rem 1.25rem;
+    @apply shadow rounded-md
+}
+
+button.fi-btn-color-primary,
+a.fi-btn-color-primary {
+    @apply bg-gradient-to-b from-primary-500 to-primary-600;
+}
+
+button.fi-btn-color-danger,
+a.fi-btn-color-danger {
+    @apply bg-gradient-to-b from-red-500 to-red-600;
+}
+
+button.fi-btn-color-info,
+a.fi-btn-color-info {
+    @apply bg-gradient-to-b from-blue-500 to-blue-600;
+}
+
+button.fi-btn-color-success,
+a.fi-btn-color-success {
+    @apply bg-gradient-to-b from-green-500 to-green-600;
+}
+
+button.fi-btn-color-warning,
+a.fi-btn-color-warning {
+    @apply bg-gradient-to-b from-amber-500 to-amber-600;
+}
+
+button.fi-btn-outlined,
+a.fi-btn-outlined {
+    background: transparent !important;
+}
+
+.fi-modal-close-overlay {
+    @apply backdrop-blur-sm;
+}
