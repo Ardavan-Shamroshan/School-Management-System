@@ -21,149 +21,98 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Str;
 use Livewire\Attributes\On;
 
-class ListUsers extends Page implements HasForms, HasTable
+class ListUsers extends ListRecords
 {
-    use InteractsWithForms,
-        InteractsWithTable;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
-    protected static string  $view           = 'filament.pages.user.list-users';
-    public ?array            $data           = [];
-    public ?User             $record;
+    protected static ?string $model                    = User::class;
+    protected static ?string $navigationIcon           = 'heroicon-o-users';
+    protected static bool    $shouldRegisterNavigation = true;
 
-    public function mount(): void
+    public function getFormComponents(): array
     {
-        $this->record = new User;
+        return [
+            Section::make(
+                fn() => $this->record->exists ? __('Edit user') : __('Create user')
+            )
+                ->schema([
+                    Forms\Components\TextInput::make('name')->placeholder(__('Name'))->hiddenLabel()->prefixIcon('heroicon-o-user')->required(),
+                    Forms\Components\TextInput::make('email')->placeholder(__('Email'))->hiddenLabel()->prefixIcon('heroicon-o-envelope')->nullable()->email()->unique('users', 'email', ignorable: $this->record),
+                    Forms\Components\TextInput::make('mobile')->placeholder(__('Mobile'))->hiddenLabel()->prefixIcon('heroicon-o-phone')->nullable()->unique('users', 'mobile', ignorable: $this->record),
 
-        $this->form->fill(
-            $this->record->toArray()
-        );
-    }
+                    Forms\Components\TextInput::make('password')
+                        ->password()
+                        ->revealable()
+                        ->confirmed()
+                        ->required()
+                        ->prefixIcon('heroicon-o-key')
+                        ->hiddenLabel()
+                        ->placeholder(__('Password'))
+                        ->hidden(fn() => $this->record->exists),
 
-    public function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Section::make(
-                    fn() => $this->record->exists ? __('Edit user') : __('Create user')
-                )
-                    ->schema([
-                        Forms\Components\TextInput::make('name')->placeholder(__('Name'))->hiddenLabel()->prefixIcon('heroicon-o-user')->required(),
-                        Forms\Components\TextInput::make('email')->placeholder(__('Email'))->hiddenLabel()->prefixIcon('heroicon-o-envelope')->nullable()->email()->unique('users', 'email', ignorable: $this->record),
-                        Forms\Components\TextInput::make('mobile')->placeholder(__('Mobile'))->hiddenLabel()->prefixIcon('heroicon-o-phone')->nullable()->unique('users', 'mobile', ignorable: $this->record),
+                    Forms\Components\TextInput::make('password_confirmation')
+                        ->password()
+                        ->revealable()
+                        ->required()
+                        ->prefixIcon('heroicon-o-key')
+                        ->hiddenLabel()
+                        ->placeholder(__('Password confirmation'))
+                        ->hidden(fn() => $this->record->exists),
 
-                        Forms\Components\TextInput::make('password')
-                            ->password()
-                            ->revealable()
-                            ->confirmed()
-                            ->required()
-                            ->prefixIcon('heroicon-o-key')
-                            ->hiddenLabel()
-                            ->placeholder(__('Password'))
-                            ->hidden(fn() => $this->record->exists),
+                    Forms\Components\Radio::make('role')
+                        ->options(UserRole::class)
+                        ->default(UserRole::USER)
+                        ->hintIcon('heroicon-o-shield-exclamation'),
 
-                        Forms\Components\TextInput::make('password_confirmation')
-                            ->password()
-                            ->revealable()
-                            ->required()
-                            ->prefixIcon('heroicon-o-key')
-                            ->hiddenLabel()
-                            ->placeholder(__('Password confirmation'))
-                            ->hidden(fn() => $this->record->exists),
-
-                        Forms\Components\Radio::make('role')
-                            ->options(UserRole::class)
-                            ->default(UserRole::USER)
-                            ->hintIcon('heroicon-o-shield-exclamation'),
-
-                        Forms\Components\Actions::make([
-                            Forms\Components\Actions\Action::make('save')->submit('save'),
-                            Forms\Components\Actions\Action::make('clear')
-                                ->color('danger')
-                                ->outlined()
-                                ->visible(fn() => $this->record->exists)
-                                ->action(fn() => $this->dispatch('record-cleared'))
-                        ])
-                    ])
-                    ->headerActions([
-                        Forms\Components\Actions\Action::make('reset_password')
-                            ->form([
-                                Forms\Components\TextInput::make('password')
-                                    ->password()
-                                    ->revealable()
-                                    ->confirmed()
-                                    ->required(),
-
-                                Forms\Components\TextInput::make('password_confirmation')
-                                    ->password()
-                                    ->revealable()
-                                    ->required(),
-                            ])
-                            ->action(function (array $data) {
-                                $this->record
-                                    ->forceFill(['password' => $data['password']])
-                                    ->setRememberToken(Str::random(60));
-
-                                $this->record->save();
-
-                                Notification::make()->success()->title(__('Your password has been updated!'))->send();
-                            })
-                            ->icon('heroicon-o-arrow-path')
+                    Forms\Components\Actions::make([
+                        Forms\Components\Actions\Action::make('save')->submit('save'),
+                        Forms\Components\Actions\Action::make('clear')
                             ->color('danger')
-                            ->requiresConfirmation()
+                            ->outlined()
                             ->visible(fn() => $this->record->exists)
+                            ->action(fn() => $this->dispatch('record-cleared'))
                     ])
+                ])
+                ->headerActions([
+                    Forms\Components\Actions\Action::make('reset_password')
+                        ->form([
+                            Forms\Components\TextInput::make('password')
+                                ->password()
+                                ->revealable()
+                                ->confirmed()
+                                ->required(),
 
-            ])
-            ->statePath('data');
+                            Forms\Components\TextInput::make('password_confirmation')
+                                ->password()
+                                ->revealable()
+                                ->required(),
+                        ])
+                        ->action(function (array $data) {
+                            $this->record
+                                ->forceFill(['password' => $data['password']])
+                                ->setRememberToken(Str::random(60));
+
+                            $this->record->save();
+
+                            Notification::make()->success()->title(__('Your password has been updated!'))->send();
+                        })
+                        ->icon('heroicon-o-arrow-path')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->visible(fn() => $this->record->exists)
+                ])
+
+        ];
     }
 
-    public function table(Table $table): Table
+    public function getTableSchema(): array
     {
-        return $table
-            ->query(User::query())
-            ->defaultPaginationPageOption(50)
-            ->columns([
-                TextColumn::make('name')->searchable(),
-                TextColumn::make('email')->searchable()->description(fn($record) => verta($record->email_verified_at)->formatDate()),
-                TextColumn::make('mobile')->searchable()->description(fn($record) => verta($record->mobile_verified_at)->formatDate()),
-                TextColumn::make('role')->badge()->label(__('Access control level')),
-                TextColumn::make('roles.name')->badge(),
-            ])->actions([
-                Actions\Action::make('edit')
-                    ->icon('heroicon-o-pencil-square')
-                    ->color('warning')
-                    ->action(fn($record) => $this->dispatch('record-selected', record: $record)),
-
-                Actions\DeleteAction::make(),
-            ]);
-    }
-
-    public function save(): void
-    {
-        $data = $this->form->getState();
-
-        $this->record->forceFill([
-            'name'     => $data['name'],
-            'email'    => $data['email'],
-            'mobile'   => $data['mobile'],
-            'password' => $data['password'],
-            'role'     => $data['role'],
-        ]);
-
-        $this->record->save();
-
-        Notification::make('saved')->success()->title(__('Successful'))->send();
-    }
-
-    #[On('record-selected'), On('record-cleared')]
-    public function updatedRecord(?User $record): void
-    {
-        $this->record = $record;
-
-        $this->form->fill(
-            $record->toArray()
-        );
+        return [
+            TextColumn::make('name')->searchable(),
+            TextColumn::make('email')->searchable()->description(fn($record) => verta($record->email_verified_at)->formatDate()),
+            TextColumn::make('mobile')->searchable()->description(fn($record) => verta($record->mobile_verified_at)->formatDate()),
+            TextColumn::make('role')->badge()->label(__('Access control level')),
+            TextColumn::make('roles.name')->badge(),
+        ];
     }
 
     public function getTitle(): string|Htmlable
@@ -174,14 +123,5 @@ class ListUsers extends Page implements HasForms, HasTable
     public static function getNavigationLabel(): string
     {
         return __('Users');
-    }
-
-    public function getBreadcrumbs(): array
-    {
-        return [
-            Dashboard::getUrl() => __('Dashboard'),
-            ListUsers::getUrl() => __('Users'),
-            '0'                 => __('Users list')
-        ];
     }
 }

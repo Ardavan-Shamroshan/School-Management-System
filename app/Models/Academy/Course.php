@@ -18,8 +18,6 @@ class Course extends Model
         'slug',
         'description',
         'image',
-        'created_by',
-        'updated_by',
     ];
 
     public function sluggable(): array

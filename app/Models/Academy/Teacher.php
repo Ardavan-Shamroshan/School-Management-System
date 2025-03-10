@@ -15,12 +15,22 @@ class Teacher extends Model
 {
     use SoftDeletes, Notifiable;
 
-    protected $fillable = ['user_id', 'name', 'mobile', 'second_mobile', 'gender', 'father_name', 'info', 'address'];
+    protected $fillable = [
+        'user_id',
+        'name',
+        'mobile',
+        'second_mobile',
+        'gender',
+        'father_name',
+        'info',
+        'address'
+    ];
 
     protected function casts(): array
     {
         return [
-            'gender' => GenderEnum::class
+            'gender' => GenderEnum::class,
+            'info'   => 'array',
         ];
     }
 

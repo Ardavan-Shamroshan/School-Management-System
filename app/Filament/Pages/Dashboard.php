@@ -40,13 +40,14 @@ class Dashboard extends BaseDashboard implements HasForms, HasTable
             ->query($this->getTableQuery())
             ->defaultPaginationPageOption(50)
             ->contentGrid([
-                'xl' => 8
+                'xl' => 7
             ])
             ->columns([
                 Grid::make()
                     ->columns(1)
                     ->schema([
-                        ImageColumn::make('image')->height('100%')->width('100%')->extraAttributes(['class' => 'rounded-md overflow-hidden']),
+                        ImageColumn::make('image')->height('100%')->width('100%')
+                            ->extraAttributes(['class' => 'rounded-md overflow-hidden transition-all duration-200 ease-in-out hover:scale-110']),
                         Stack::make([
                             TextColumn::make('name')
                                 ->searchable()
@@ -64,12 +65,13 @@ class Dashboard extends BaseDashboard implements HasForms, HasTable
 
                             TextColumn::make('enroll')
                                 ->default(fn() => new HtmlString(
-                                    Blade::render('<x-filament::button href="#" tag="a">Enroll</x-filament::button>')
+                                    Blade::render('<x-filament::button href="#" tag="a">'. __('Enroll') .'</x-filament::button>')
                                 ))
                                 ->extraAttributes(['class' => 'justify-center'])
                         ])
                     ])
             ])
+            ->recordUrl('/')
             ->filters([
                 Tables\Filters\Filter::make('academy_section')
                     ->form([
@@ -117,6 +119,14 @@ class Dashboard extends BaseDashboard implements HasForms, HasTable
     protected function getTableQuery(): Builder
     {
         return Course::query();
+    }
+
+    public function getBreadcrumbs(): array
+    {
+        return [
+            '/' => __('Home'),
+            '0' => __('Dashboard'),
+        ];
     }
 
     // public function getTabs(): array

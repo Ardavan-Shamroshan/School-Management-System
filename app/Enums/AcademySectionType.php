@@ -3,10 +3,11 @@
 namespace App\Enums;
 
 use App\Traits\BaseEnum;
+use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
-enum AcademySectionType: int implements HasLabel, HasIcon
+enum AcademySectionType: int implements HasLabel, HasIcon, HasColor
 {
     use BaseEnum;
 
@@ -29,6 +30,15 @@ enum AcademySectionType: int implements HasLabel, HasIcon
             self::BOYS  => 'heroicon-o-academic-cap',
             self::GIRLS => 'heroicon-o-academic-cap',
             self::BOTH  => 'heroicon-o-academic-cap',
+        };
+    }
+
+    public function getColor(): string
+    {
+        return match ($this) {
+            self::BOYS  => 'info',
+            self::GIRLS => 'fuchsia',
+            self::BOTH  => 'primary',
         };
     }
 }

@@ -2,7 +2,9 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Auth\Login;
 use App\Filament\Pages\Dashboard;
+use App\Filament\Plugins\AuthUIEnhancerPlugin\AuthUIEnhancerPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -28,7 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->login()
+            ->login(Login::class)
             ->colors([
                 'primary' => Color::Indigo
             ])
@@ -56,6 +58,12 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+            ])
+            ->plugins([
+                AuthUIEnhancerPlugin::make()
+                    ->formPanelPosition('left')
+                    ->showEmptyPanelOnMobile(true)
+                    ->emptyPanelBackgroundImageUrl(Vite::asset('resources/assets/images/banner.svg')),
             ])
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->brandLogo(Vite::asset('resources/assets/images/logo-dark.png'))

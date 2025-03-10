@@ -11,12 +11,15 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\Entry;
+use Filament\Support\Colors\Color;
+use Filament\Support\Facades\FilamentColor;
 use Filament\Tables\Columns\Column;
 use Filament\Tables\Filters\BaseFilter;
 use Filament\Tables\Filters\QueryBuilder\Constraints\Constraint;
 use Filament\Tables\Table;
 use Illuminate\Support\ServiceProvider;
 use Filament\Tables;
+use function App\Support\translate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        require_once(app_path('Support/Helpers.php'));
     }
 
     /**
@@ -34,6 +37,15 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureComponents();
+
+        FilamentColor::register([
+            'fuchsia' => Color::Fuchsia,
+            'cyan'    => Color::Cyan,
+            'teal'    => Color::Teal,
+            'purple'  => Color::Violet,
+            'yellow'  => Color::Yellow,
+            'orange'  => Color::Orange,
+        ]);
     }
 
     public function configureComponents(): void
@@ -77,7 +89,7 @@ class AppServiceProvider extends ServiceProvider
         DatePicker::configureUsing(fn($component) => $component->jalali()->default(now())->prefixIcon('heroicon-o-calendar-days'));
         DateTimePicker::configureUsing(fn($component) => $component->default(now())->prefixIcon('heroicon-o-calendar-days'));
         Column::configureUsing(fn($component) => $component->toggleable());
-        TextInput::configureUsing(fn($component) => $component->maxLength(255));
+        TextInput::configureUsing(fn($component) => $component->maxLength(255)->placeholder(translate($component->getName())));
         Select::configureUsing(fn($component) => $component->native(false)->searchable()->preload());
 
         // Tables\Columns\TextColumn::configureUsing(function ($component) {
