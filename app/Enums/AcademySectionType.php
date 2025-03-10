@@ -2,11 +2,14 @@
 
 namespace App\Enums;
 
+use App\Traits\BaseEnum;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
 enum AcademySectionType: int implements HasLabel, HasIcon
 {
+    use BaseEnum;
+
     case BOYS  = 0;
     case GIRLS = 1;
     case BOTH  = 2;
@@ -27,25 +30,5 @@ enum AcademySectionType: int implements HasLabel, HasIcon
             self::GIRLS => 'heroicon-o-academic-cap',
             self::BOTH  => 'heroicon-o-academic-cap',
         };
-    }
-
-    // Find case by value and display as label
-
-    public static function getValue(string $value): ?string
-    {
-        foreach (self::cases() as $case) {
-            if ($value == $case->value) {
-                return $case->getLabel();
-            }
-        }
-
-        return null;
-    }
-
-    // Display cases as an array
-
-    public static function toArray(): array
-    {
-        return array_column(self::cases(), 'value');
     }
 }

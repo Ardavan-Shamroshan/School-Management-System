@@ -2,8 +2,8 @@
 
 namespace App\Filament\Pages;
 
-use App\Enums\AcademySectionType;
 use App\Models\Academy\AcademySection;
+use App\Models\Academy\Course;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -24,20 +24,20 @@ use Livewire\Attributes\On;
 use Livewire\WithFileUploads;
 use Nette\Utils\Image;
 
-class ListAcademySections extends Page implements HasForms, HasTable
+class ListCourses extends Page implements HasForms, HasTable
 {
     use InteractsWithForms,
         InteractsWithTable,
         WithFileUploads;
 
-    protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
-    protected static string  $view           = 'filament.pages.list-academy-sections';
+    protected static ?string $navigationIcon = 'heroicon-o-book-open';
+    protected static string  $view           = 'filament.pages.list-courses';
     public ?array            $data           = [];
-    public ?AcademySection   $record;
+    public ?Course           $record;
 
     public function mount(): void
     {
-        $this->record = new AcademySection;
+        $this->record = new Course;
 
         $this->form->fill(
             $this->record->toArray()
@@ -49,10 +49,15 @@ class ListAcademySections extends Page implements HasForms, HasTable
         return $form
             ->schema([
                 Section::make(
-                    fn() => $this->record->exists ? __('Edit academy section') : __('Create academy section')
+                    fn() => $this->record->exists ? __('Edit course') : __('Create course')
                 )
                     ->schema([
-                        Forms\Components\Select::make('type')->placeholder(__('Type'))->options(AcademySectionType::class)->hiddenLabel()->prefixIcon('heroicon-o-square-3-stack-3d')->nullable(),
+                        Forms\Components\Select::make('academy_section_id')
+                            ->options(AcademySection::all()->pluck('name', 'id'))
+                            ->placeholder(__('Academy section'))
+                            ->hiddenLabel()
+                            ->required()
+                            ->prefixIcon('heroicon-o-academic-cap'),
 
                         Forms\Components\TextInput::make('name')
                             ->live(onBlur: true)
@@ -88,12 +93,12 @@ class ListAcademySections extends Page implements HasForms, HasTable
     public function table(Table $table): Table
     {
         return $table
-            ->query(AcademySection::query())
+            ->query(Course::query())
             ->defaultPaginationPageOption(50)
             ->columns([
                 ImageColumn::make('image'),
                 TextColumn::make('name')->searchable(),
-                TextColumn::make('type')->searchable()->badge(),
+                TextColumn::make('academySection.name')->searchable()->badge(),
                 TextColumn::make('description')->searchable(),
             ])->actions([
                 Actions\Action::make('edit')
@@ -110,11 +115,11 @@ class ListAcademySections extends Page implements HasForms, HasTable
         $data = $this->form->getState();
 
         $this->record->forceFill([
-            'name'        => $data['name'],
-            'slug'        => $data['slug'],
-            'type'        => $data['type'],
-            'description' => $data['description'],
-            'image'       => $data['image'],
+            'academy_section_id' => $data['academy_section_id'],
+            'name'               => $data['name'],
+            'slug'               => $data['slug'],
+            'description'        => $data['description'],
+            'image'              => $data['image'],
         ]);
 
         $this->record->save();
@@ -123,7 +128,7 @@ class ListAcademySections extends Page implements HasForms, HasTable
     }
 
     #[On('record-selected'), On('record-cleared')]
-    public function updatedRecord(?AcademySection $record): void
+    public function updatedRecord(?Course $record): void
     {
         $this->record = $record;
 
@@ -134,20 +139,20 @@ class ListAcademySections extends Page implements HasForms, HasTable
 
     public function getTitle(): string|Htmlable
     {
-        return __('Academy sections');
+        return __('Courses');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('Academy sections');
+        return __('Courses');
     }
 
     public function getBreadcrumbs(): array
     {
         return [
-            Dashboard::getUrl()           => __('Dashboard'),
-            ListAcademySections::getUrl() => __('Academy sections'),
-            '0'                           => __('Academy sections list')
+            Dashboard::getUrl()   => __('Dashboard'),
+            ListCourses::getUrl() => __('Courses'),
+            '0'                   => __('Courses list')
         ];
     }
 }
