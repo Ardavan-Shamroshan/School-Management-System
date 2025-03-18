@@ -3,7 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Enums\AcademySectionType;
-use App\Models\Academy\AcademySection;
+use App\Filament\Pages\Section\ListSections;
 use App\Models\Academy\Course;
 use BackedEnum;
 use Filament\Forms\Components\ToggleButtons;
@@ -18,12 +18,11 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\Layout\Grid;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Contracts\HasTable;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
-use Illuminate\Support\Str;
+use Livewire\Attributes\Url;
 
 class Dashboard extends BaseDashboard implements HasForms, HasTable
 {
@@ -33,6 +32,9 @@ class Dashboard extends BaseDashboard implements HasForms, HasTable
     }
 
     protected static string $view = 'filament.pages.dashboard';
+
+    #[Url(as: 'tableFilters', keep: true, except: '')]
+    public $filters;
 
     public function table(Table $table): Table
     {
@@ -65,13 +67,14 @@ class Dashboard extends BaseDashboard implements HasForms, HasTable
 
                             TextColumn::make('enroll')
                                 ->default(fn() => new HtmlString(
-                                    Blade::render('<x-filament::button href="#" tag="a">'. __('Enroll') .'</x-filament::button>')
+                                    Blade::render('<x-filament::button href="#" tag="a">' . __('Enroll') . '</x-filament::button>')
                                 ))
                                 ->extraAttributes(['class' => 'justify-center'])
                         ])
                     ])
             ])
-            ->recordUrl('/')
+            ->recordUrl(fn($record) => ListSections::getUrl(['record' => $record, 'filter' => $this->filters]))
+            ->persistFiltersInSession()
             ->filters([
                 Tables\Filters\Filter::make('academy_section')
                     ->form([
@@ -81,6 +84,8 @@ class Dashboard extends BaseDashboard implements HasForms, HasTable
                             ->inline(),
                     ])
                     ->query(function (Builder $query, array $data) {
+                        $this->filters = $data['type'];
+
                         if ($data['type'] == AcademySectionType::BOTH) {
                             return $query;
                         }
@@ -94,11 +99,11 @@ class Dashboard extends BaseDashboard implements HasForms, HasTable
                     ->indicateUsing(function (array $data): ?string {
                         $type = $data['type'];
 
-                        if (! $type) {
+                        if (is_null($type)) {
                             return null;
                         }
 
-                        if (! ($data['type'] instanceof BackedEnum)) {
+                        if (! ($type instanceof BackedEnum)) {
                             $type = AcademySectionType::getBy($type);
                         }
 

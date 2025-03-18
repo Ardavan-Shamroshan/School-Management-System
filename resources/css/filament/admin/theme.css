@@ -30,39 +30,40 @@
 }
 
 .fi-btn {
-    padding: .275rem 1.25rem;
-    @apply shadow rounded-md
+    padding: .175rem 1.25rem;
+    @apply rounded shadow
 }
 
-button.fi-btn-color-primary,
-a.fi-btn-color-primary {
-    @apply bg-gradient-to-b from-primary-500 to-primary-600;
+button.fi-btn-color-primary:not(.fi-btn-outlined),
+a.fi-btn-color-primary:not(.fi-btn-outlined) {
+    @apply bg-primary-500 hover:opacity-90 border-t border-t-primary-400 ring-1 ring-primary-600;
 }
 
-button.fi-btn-color-danger,
-a.fi-btn-color-danger {
-    @apply bg-gradient-to-b from-red-500 to-red-600;
+button.fi-btn-color-danger:not(.fi-btn-outlined),
+a.fi-btn-color-danger:not(.fi-btn-outlined) {
+    @apply bg-danger-500 hover:opacity-90 border-t border-t-danger-400 ring-1 ring-danger-600;
 }
 
-button.fi-btn-color-info,
-a.fi-btn-color-info {
-    @apply bg-gradient-to-b from-blue-500 to-blue-600;
+button.fi-btn-color-stone:not(.fi-btn-outlined),
+a.fi-btn-color-stone:not(.fi-btn-outlined) {
+    @apply text-white bg-stone-800 hover:opacity-90 border-t border-t-stone-600 ring-1 ring-stone-900;
 }
 
-button.fi-btn-color-success,
-a.fi-btn-color-success {
-    @apply bg-gradient-to-b from-green-500 to-green-600;
+button.fi-btn-color-info:not(.fi-btn-outlined),
+a.fi-btn-color-info:not(.fi-btn-outlined) {
+    @apply bg-blue-500 hover:opacity-90 border-t border-t-blue-400 ring-1 ring-blue-600;
 }
 
-button.fi-btn-color-warning,
-a.fi-btn-color-warning {
-    @apply bg-gradient-to-b from-amber-500 to-amber-600;
+button.fi-btn-color-success:not(.fi-btn-outlined),
+a.fi-btn-color-success:not(.fi-btn-outlined) {
+    @apply bg-green-500 hover:opacity-90 border-t border-t-green-400 ring-1 ring-green-600;
 }
 
-button.fi-btn-outlined,
-a.fi-btn-outlined {
-    background: transparent !important;
+button.fi-btn-color-warning:not(.fi-btn-outlined),
+a.fi-btn-color-warning:not(.fi-btn-outlined) {
+    @apply bg-amber-500 hover:opacity-90 border-t border-t-amber-400 ring-1 ring-amber-600;
 }
+
 
 .fi-modal-close-overlay {
     @apply backdrop-blur-sm;

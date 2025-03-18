@@ -123,7 +123,6 @@ class ListRecords extends Page implements HasForms, HasTable
         return [];
     }
 
-
     public function getBreadcrumbs(): array
     {
         return [

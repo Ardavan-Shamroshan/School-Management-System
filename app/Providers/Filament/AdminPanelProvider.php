@@ -32,7 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login(Login::class)
             ->colors([
-                'primary' => Color::Indigo
+                'primary' => '#671CC9'
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
@@ -70,7 +70,6 @@ class AdminPanelProvider extends PanelProvider
             ->favicon(Vite::asset('resources/assets/images/logo-dark.png'))
             ->brandLogoHeight('3rem')
             ->unsavedChangesAlerts()
-            ->sidebarFullyCollapsibleOnDesktop()
-            ->topNavigation();
+            ->sidebarCollapsibleOnDesktop();
     }
 }
