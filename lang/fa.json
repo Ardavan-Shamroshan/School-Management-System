@@ -70,5 +70,11 @@
   "Male": "مرد",
   "Female": "زن",
   "Extra information": "اطلاعات اضافه",
-  "Sections list": "لیست سکشن ها"
+  "Sections list": "لیست سکشن ها",
+  "New section": "سکشن جدید",
+  "Type section name": "نام سکشن را وارد کنید",
+  "(and :count more error)": "(و یک خطای دیگر)",
+  "(and :count more errors)": "(و :count خطای دیگر)",
+  "Created": "ایجاد شد",
+  "Successful": "موفق"
 }

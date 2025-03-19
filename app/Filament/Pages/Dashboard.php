@@ -73,7 +73,7 @@ class Dashboard extends BaseDashboard implements HasForms, HasTable
                         ])
                     ])
             ])
-            ->recordUrl(fn($record) => ListSections::getUrl(['record' => $record, 'filter' => $this->filters]))
+            ->recordUrl(fn($record) => ListSections::getUrl(['course' => $record]))
             ->persistFiltersInSession()
             ->filters([
                 Tables\Filters\Filter::make('academy_section')

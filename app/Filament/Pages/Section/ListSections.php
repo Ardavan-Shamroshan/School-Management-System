@@ -3,72 +3,65 @@
 namespace App\Filament\Pages\Section;
 
 use App\Filament\Pages\Dashboard;
-use App\Models\Academy\AcademySection;
 use App\Models\Academy\Course;
 use App\Models\Academy\Section;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Contracts\Support\Htmlable;
-use Livewire\{Attributes\Computed, Attributes\On, Attributes\Url, Volt\Component, WithPagination};
+use Livewire\{Attributes\Computed, Attributes\On, Attributes\Rule, Attributes\Url, Attributes\Validate, WithPagination};
 use Illuminate\Pagination\LengthAwarePaginator;
-
 
 class ListSections extends Page
 {
+    use WithPagination;
+
     protected static string  $view                     = 'filament.pages.section.list-sections';
-    protected static ?string $slug                     = '{record:slug}/sections';
+    protected static ?string $slug                     = '{course:slug}/sections';
     protected static bool    $shouldRegisterNavigation = false;
-    public Course            $record;
-    public AcademySection    $filterModel;
-    public Section           $selectedSection;
+    public Course            $course;
+    public ?Section          $selected;
+    public int|string        $perPage                  = 9;
 
-    #[Url(keep: true)]
-    public int|string $filter;
+    #[Validate('required|string|filled')]
+    public string $name;
 
-    #[Url(keep: true)]
+    #[Url(as: 'filter', keep: true)]
     public int|string $section;
 
 
-    public function mount(Course $record): void
+    public function mount(Course $course): void
     {
-        $this->record = $record;
-
-        $this->filterModel = AcademySection::query()->findOr(
-            id      : $this->filter,
-            callback: fn() => $this->redirectIntended(Dashboard::getUrl(), navigate: true)
-        );
-
-        $this->selectedSection = $this->selectedSection ?? $this->record->sections()->latest()->first() ?? new Section;
-        $this->section         = $this->section ?? $this->selectedSection->id;
-
-        // $this->dispatch('set-section', id: $this->selectedSection->id);
+        $this->course   = $course;
+        $this->selected = $this->selected ?? $this->course->sections()->latest()->first() ?? new Section;
+        $this->section  = $this->section ?? $this->selected->id;
     }
 
     #[On('section-created'), On('section-updated'), On('section-deleted')]
     #[Computed]
     public function sections(): LengthAwarePaginator
     {
-        return $this->record->sections()->latest()->paginate(10, pageName: 'sections-list-paginator');
+        return $this->course->sections()->latest()->paginate($this->perPage);
     }
 
-    #[On('set-section')]
-    public function setSection($id): void
+    public function create(): void
     {
-        $this->selectedSection = $this->record->sections()?->find($id) ?? null;
-        // $this->form->setSection(section: $this->selected, course: $this->course);
+        $data = $this->validate();
+
+        $section = $this->course->sections()->create($data);
+
+        if ($section) {
+            Notification::make()->success()->title(__('Successful'))->send();
+            $this->dispatch('section-created', id: $section->id);
+        }
+
+        $this->dispatch('close-modal', id: 'create-section');
     }
 
     #[On('section-created'), On('section-deleted')]
     public function changeSection($id): void
     {
-        $this->selectedSection = Section::query()->where(['course_id' => $this->record->id, 'id' => $id])->first();
-        if ($this->selectedSection) {
-            $this->setSection($this->selectedSection->id);
-            $this->section = $this->selectedSection->id;
-
-            $this->dispatch('section-changed', id: $this->selectedSection->id);
-        } else {
-            // $this->somethingWentWrong();
-        }
+        $this->selected = $this->course->sections()->find($id);
+        $this->section  = $this->selected->id;
     }
 
     public function getTitle(): string|Htmlable
@@ -80,9 +73,10 @@ class ListSections extends Page
     {
         return [
             Dashboard::getUrl() => __('Dashboard'),
-            '0'                 => $this->filterModel->name,
-            '1'                 => $this->record->name,
+            '0'                 => $this->course->academySection->name,
+            '1'                 => $this->course->name,
             '2'                 => __($this->getTitle()),
+            '3'                 => $this->selected->teacher?->name ?? 'مدرس نامشخص'
         ];
     }
 }

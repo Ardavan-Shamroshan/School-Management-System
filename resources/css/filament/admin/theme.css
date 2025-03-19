@@ -64,7 +64,25 @@ a.fi-btn-color-warning:not(.fi-btn-outlined) {
     @apply bg-amber-500 hover:opacity-90 border-t border-t-amber-400 ring-1 ring-amber-600;
 }
 
-
 .fi-modal-close-overlay {
     @apply backdrop-blur-sm;
+}
+
+.fi-topbar {
+    @apply hidden
+}
+
+.fi-sidebar-header {
+    @apply !bg-transparent !shadow-none !ring-0
+}
+
+.fi-header div:first-child {
+    @apply flex flex-row-reverse gap-x-3 items-center
+}
+.fi-header div:first-child h1 {
+    @apply !text-2xl sm:text-2xl
+}
+
+.fi-breadcrumbs {
+    @apply !mb-0
 }
