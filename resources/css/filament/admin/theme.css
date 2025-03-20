@@ -25,13 +25,11 @@
 }
 
 .fi-ta-ctn .py-4 {
-    padding-top: .5rem !important;
-    padding-bottom: .5rem !important;
+    @apply !py-[0.5rem]
 }
 
 .fi-btn {
-    padding: .175rem 1.25rem;
-    @apply rounded shadow
+    @apply !rounded-md shadow !px-[1.25rem] !py-[.175rem]
 }
 
 button.fi-btn-color-primary:not(.fi-btn-outlined),
@@ -79,6 +77,7 @@ a.fi-btn-color-warning:not(.fi-btn-outlined) {
 .fi-header div:first-child {
     @apply flex flex-row-reverse gap-x-3 items-center
 }
+
 .fi-header div:first-child h1 {
     @apply !text-2xl sm:text-2xl
 }
@@ -86,3 +85,11 @@ a.fi-btn-color-warning:not(.fi-btn-outlined) {
 .fi-breadcrumbs {
     @apply !mb-0
 }
+
+.fi-section:has(.primary-header) > .fi-section-header {
+    @apply bg-green-400 rounded-t-xl
+}
+
+/*.fi-section-header-heading {*/
+/*    @apply text-white*/
+/*}*/

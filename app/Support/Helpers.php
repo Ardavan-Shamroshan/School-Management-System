@@ -5,7 +5,10 @@ namespace App\Support;
 use App\Models\Setting;
 use Filament\Notifications\Notification;
 use Filament\Forms;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Number;
+use Illuminate\Support\Str;
 use Schema;
 
 if (! function_exists('App\Support\translate')) {
@@ -46,6 +49,33 @@ if (! function_exists('saved')) {
 }
 
 
+if (! function_exists('IRR')) {
+    function IRR($price): false|string
+    {
+        return Number::currency($price, in: 'IRR', locale: 'fa');
+    }
+}
+
+if (! function_exists('IRT')) {
+    function IRT($price = null, $in = true, $delimiter = ', '): bool|string
+    {
+        if (Str::contains($price, $delimiter)) {
+            $prices      = str($price)->explode($delimiter)->toArray();
+            $pricesArray = Arr::map($prices, fn($price) => IRT($price));
+            return implode(', ', $pricesArray);
+        }
+
+        $price = str(Number::format($price ?? 0, locale: 'fa'));
+
+        if ($in) {
+            $price = $price->append(' ')->append(__('IRT'));
+        }
+
+        return $price;
+    }
+}
+
+
 if (! function_exists('formComponentsConfiguration')) {
     function formComponentsConfiguration(): void
     {
@@ -65,6 +95,7 @@ if (! function_exists('loading')) {
         return Blade::render('<x-filament::loading-indicator wire:loading wire:target="' . $target . '" class="h-5 w-5"/>');
     }
 }
+
 if (! function_exists('setting')) {
     function setting($column)
     {
