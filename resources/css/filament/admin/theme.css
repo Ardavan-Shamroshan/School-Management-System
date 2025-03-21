@@ -29,7 +29,11 @@
 }
 
 .fi-btn {
-    @apply !rounded-md shadow !px-[1.25rem] !py-[.175rem]
+    @apply !rounded-md
+}
+
+.fi-btn:not(.icon-btn) {
+    @apply !px-[1.25rem] !py-[.175rem]
 }
 
 button.fi-btn-color-primary:not(.fi-btn-outlined),

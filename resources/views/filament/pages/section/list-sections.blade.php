@@ -6,27 +6,27 @@
 
     <div>
         <div class="grid grid-cols-10 items-center gap-x-1">
-            @foreach($this->sections as $section)
+            @foreach($this->sections as $item)
                 <div class="col-span-1">
                     <input
-                            id="{{ $section->id }}"
+                            id="{{ $item->id }}"
                             name="section_id"
                             type="radio"
                             class="sr-only peer"
-                            wire:model="selected"
-                            wire:click="changeSection({{ $section->id }})"
+                            wire:model="section"
+                            wire:click="changeSection({{ $item->id }})"
                     >
                     <label
-                            for="{{ $section->id }}"
+                            for="{{ $item->id }}"
                             @class([
                                 'flex h-20 p-3 bg-white border border-gray-300
                                 rounded-lg transition-all duration-200 ease-in-out
                                  cursor-pointer focus:outline-none hover:border-primary-500',
-                                'border-primary-500 border-2' => $section->id == $selected->id
+                                'border-primary-500 border-2' => $item->id == $section->id
                                 ])
-                            wire:key="section-{{ $section->id }}"
+                            wire:key="section-{{ $item->id }}"
                     >
-                        <span class="text-sm">{{ $section->teacher->name ?? $section->name }}</span>
+                        <span class="text-sm">{{ $item->teacher->name ?? $item->name }}</span>
                     </label>
                 </div>
             @endforeach
@@ -91,16 +91,29 @@
         <x-filament::pagination
                 class="mt-4"
                 :paginator="$this->sections"
-                {{--            :page-options="[5, 10, 20, 50, 100, 'all']"--}}
-                {{--            :current-page-option-property="$perPage"--}}
-                {{--            extreme-links--}}
         />
     </div>
 
-    <x-filament-panels::form wire:submit="save">
+    <div>
+        <x-filament-panels::form wire:submit="save">
 
-        {{ $this->form }}
+            {{ $this->form }}
+
+
+        </x-filament-panels::form>
+    </div>
+
+    <div>
+        {{ $this->table }}
+
+    </div>
+
+    <x-filament-panels::form wire:submit="addStudent">
+
+        {{ $this->addStudentForm }}
 
     </x-filament-panels::form>
+
+    <x-filament-actions::modals/>
 
 </x-filament-panels::page>
