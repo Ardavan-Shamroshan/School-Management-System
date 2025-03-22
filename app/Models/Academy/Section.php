@@ -70,7 +70,7 @@ class Section extends Model {
 
 	public function schedulesBadge(): Attribute {
 		return Attribute::make(
-			get: fn() => Arr::map($this->schedules, function(string $value) {
+			get: fn() => Arr::map($this->schedules ?? [], function(string $value) {
 				return mb_substr(__(ucfirst($value)), 0, 1);
 			}),
 		);

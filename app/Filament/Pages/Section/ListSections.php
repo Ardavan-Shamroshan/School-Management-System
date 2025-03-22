@@ -8,6 +8,9 @@ use App\Filament\Pages\Dashboard;
 use App\Models\Academy\Course;
 use App\Models\Academy\Section;
 use App\Models\Academy\Teacher;
+use Filament\Actions\Action;
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
@@ -22,9 +25,10 @@ use Filament\Forms;
 use function App\Support\IRT;
 use function App\Support\saved;
 
-class ListSections extends Page implements HasForms, HasTable
+class ListSections extends Page implements HasForms, HasTable, HasActions
 {
-    use InteractsWithForms,
+    use InteractsWithActions,
+        InteractsWithForms,
         AddStudentForm,
         ListStudentsTable;
 
@@ -33,11 +37,8 @@ class ListSections extends Page implements HasForms, HasTable
     protected static bool    $shouldRegisterNavigation = false;
     public Course            $course;
     public ?Section          $section;
-    public int|string        $perPage                  = 9;
+    public int|string        $perPage                  = 8;
     public ?array            $data                     = [];
-
-    #[Validate('required|string|filled')]
-    public string $name;
 
     #[Url(as: 'filter', keep: true)]
     public int|string $filter;
@@ -109,7 +110,22 @@ class ListSections extends Page implements HasForms, HasTable
                         Forms\Components\Actions\Action::make('list')->color('info')->icon('heroicon-o-clipboard-document-list')->hiddenLabel()->tooltip(__('List'))->extraAttributes(['class' => 'icon-btn']),
                         Forms\Components\Actions\Action::make('print')->icon('heroicon-o-printer')->hiddenLabel()->tooltip(__('Print'))->extraAttributes(['class' => 'icon-btn']),
                         Forms\Components\Actions\Action::make('rename')->color('stone')->icon('heroicon-o-pencil-square')->hiddenLabel()->tooltip(__('Rename'))->extraAttributes(['class' => 'icon-btn']),
-                        $this->deleteAction()
+                        Forms\Components\Actions\Action::make('remove')
+                            ->color('danger')
+                            ->icon('heroicon-o-trash')
+                            ->action('delete')
+                            ->hiddenLabel()
+                            ->tooltip(__('Remove'))
+                            ->extraAttributes(['class' => 'icon-btn'])
+                            ->requiresConfirmation()
+                            ->action(function () {
+                                $this->section->delete();
+
+                                saved();
+
+                                $lastSection = $this->course->sections()->latest()->first();
+                                $this->dispatch('section-deleted', id: $lastSection->id);
+                            })
                     ])
                     ->footerActions([
                         Forms\Components\Actions\Action::make('save')->color('success')->submit('save'),
@@ -129,26 +145,6 @@ class ListSections extends Page implements HasForms, HasTable
         saved();
     }
 
-    public function deleteAction(): Forms\Components\Actions\Action
-    {
-        return Forms\Components\Actions\Action::make('remove')
-            ->color('danger')
-            ->icon('heroicon-o-trash')
-            ->action('delete')
-            ->hiddenLabel()
-            ->tooltip(__('Remove'))
-            ->extraAttributes(['class' => 'icon-btn'])
-            ->requiresConfirmation()
-            ->action(function () {
-                $this->section->delete();
-
-                saved();
-
-                $lastSection = $this->course->sections()->latest()->first();
-                $this->dispatch('section-deleted', id: $lastSection->id);
-            });
-    }
-
     #[On('section-created'), On('section-updated'), On('section-deleted')]
     #[Computed]
     public function sections(): LengthAwarePaginator
@@ -156,19 +152,33 @@ class ListSections extends Page implements HasForms, HasTable
         return $this->course->sections()->latest()->paginate($this->perPage);
     }
 
-    public function create(): void
+    public function createSectionAction(): Action
     {
-        $data = $this->validate();
+        return Action::make('createSection')
+            ->form([
+                Forms\Components\TextInput::make('name')->required(),
+            ])
+            ->action(function (array $data) {
+                $section = $this->course->sections()->create($data);
 
-        $section = $this->course->sections()->create($data);
+                if ($section) {
+                    saved();
 
-        if ($section) {
-            saved();
+                    $this->dispatch('section-created', id: $section->id);
 
-            $this->dispatch('section-created', id: $section->id);
-
-            $this->dispatch('close-modal', id: 'create-section');
-        }
+                    $this->dispatch('close-modal', id: 'create-section');
+                }
+            })
+            ->label(__('Type section name'))
+            ->hiddenLabel()
+            ->icon('heroicon-o-plus')
+            ->modalWidth('lg')
+            ->outlined()
+            ->extraAttributes([
+                'class' => 'w-full h-28 !bg-transparent hover:scale-95 scale-75 hover:!bg-primary-50
+                !ring-0 !border-2 !border-dashed !text-primary-500 !border-primary-500 !rounded-lg
+                !transition-all duration-200 ease-in-out cursor-pointer !focus:outline-none'
+            ]);
     }
 
     #[On('section-created'), On('section-deleted')]
