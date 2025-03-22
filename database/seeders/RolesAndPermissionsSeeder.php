@@ -10,9 +10,6 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RolesAndPermissionsSeeder extends Seeder {
-	/**
-	 * Run the database seeds.
-	 */
 	public function run(): void {
 		// create permissions
 		Arr::map(PermissionEnum::toArray(), fn(string $value) => Permission::create(['name' => $value]));

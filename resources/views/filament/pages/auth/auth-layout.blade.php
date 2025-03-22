@@ -25,7 +25,7 @@
             ])
         >
             @if($emptyPanelBackgroundImageUrl)
-                <div class="absolute inset-0 bg-cover bg-center rounded-xl shadow-lg m-6 transition-all duration-300 filter grayscale hover:grayscale-0 delay-50 ease-in-out hover:scale-105"
+                <div class="absolute inset-0 bg-cover bg-center rounded-xl shadow-lg m-6 transition-all duration-300 filter delay-50 ease-in-out hover:scale-105"
                      style="background-image: url('{{ $emptyPanelBackgroundImageUrl }}'); opacity: {{ $emptyPanelBackgroundImageOpacity }}; background-position: center;">
                 </div>
             @endif

@@ -36,6 +36,10 @@
     @apply !px-[1.25rem] !py-[.175rem]
 }
 
+.icon-btn {
+    @apply !px-2 !py-1;
+}
+
 button.fi-btn-color-primary:not(.fi-btn-outlined),
 a.fi-btn-color-primary:not(.fi-btn-outlined) {
     @apply bg-primary-500 hover:opacity-90 border-t border-t-primary-400 ring-1 ring-primary-600;
@@ -92,6 +96,10 @@ a.fi-btn-color-warning:not(.fi-btn-outlined) {
 
 .fi-section:has(.primary-header) > .fi-section-header {
     @apply bg-green-400 rounded-t-xl
+}
+
+.fi-page > section > div > div.auto-cols-fr {
+    @apply !gap-y-2;
 }
 
 /*.fi-section-header-heading {*/

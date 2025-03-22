@@ -10,14 +10,11 @@ use Illuminate\Support\Arr;
 
 class AcademySectionSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        Arr::map([
+        AcademySection::query()->insert([
             ['name' => 'Boys section', 'slug' => 'boys-section', 'type' => AcademySectionType::BOYS],
             ['name' => 'Girls section', 'slug' => 'girls-section', 'type' => AcademySectionType::GIRLS]
-        ], fn(array $value) => AcademySection::query()->create($value));
+        ]);
     }
 }

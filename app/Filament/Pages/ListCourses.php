@@ -21,44 +21,30 @@ class ListCourses extends ListRecords
     public function getFormComponents(): array
     {
         return [
-            Section::make(
-                fn() => $this->record->exists ? __('Edit course') : __('Create course')
-            )
-                ->schema([
-                    Forms\Components\Select::make('academy_section_id')
-                        ->options(AcademySection::all()->pluck('name', 'id'))
-                        ->placeholder(__('Academy section'))
-                        ->hiddenLabel()
-                        ->required()
-                        ->prefixIcon('heroicon-o-academic-cap'),
+            Forms\Components\Select::make('academy_section_id')
+                ->options(AcademySection::all()->pluck('name', 'id'))
+                ->placeholder(__('Academy section'))
+                ->hiddenLabel()
+                ->required()
+                ->prefixIcon('heroicon-o-academic-cap'),
 
-                    Forms\Components\TextInput::make('name')
-                        ->live(onBlur: true)
-                        ->afterStateUpdated(fn(Forms\Set $set, ?string $state) => $set('slug', $this->record->slug ?? Str::slug($state)))
-                        // ->placeholder(__('Name'))
-                        ->hiddenLabel()
-                        ->prefixIcon('heroicon-o-italic')
-                        ->required(),
+            Forms\Components\TextInput::make('name')
+                ->live(onBlur: true)
+                ->afterStateUpdated(fn(Forms\Set $set, ?string $state) => $set('slug', $this->record->slug ?? Str::slug($state)))
+                // ->placeholder(__('Name'))
+                ->hiddenLabel()
+                ->prefixIcon('heroicon-o-italic')
+                ->required(),
 
-                    Forms\Components\TextInput::make('slug')
-                        ->hintColor('warning')
-                        ->hintIcon('heroicon-o-exclamation-circle')
-                        ->hint(__('Slug will be generated based on name'))
-                        ->placeholder(__('Slug'))->hiddenLabel()->prefixIcon('heroicon-o-link')->required(),
+            Forms\Components\TextInput::make('slug')
+                ->hintColor('warning')
+                ->hintIcon('heroicon-o-exclamation-circle')
+                ->hint(__('Slug will be generated based on name'))
+                ->placeholder(__('Slug'))->hiddenLabel()->prefixIcon('heroicon-o-link')->required(),
 
-                    Forms\Components\Textarea::make('description')->placeholder(__('Description'))->hiddenLabel()->nullable(),
+            Forms\Components\Textarea::make('description')->placeholder(__('Description'))->hiddenLabel()->nullable(),
 
-                    Forms\Components\FileUpload::make('image'),
-
-                    Forms\Components\Actions::make([
-                        Forms\Components\Actions\Action::make('save')->submit('save'),
-                        Forms\Components\Actions\Action::make('clear')
-                            ->color('danger')
-                            ->outlined()
-                            ->visible(fn() => $this->record->exists)
-                            ->action(fn() => $this->dispatch('record-cleared'))
-                    ])
-                ])
+            Forms\Components\FileUpload::make('image'),
         ];
     }
 

@@ -11,9 +11,6 @@ use Illuminate\Support\Facades\File;
 
 class CourseSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $courses = [
@@ -44,11 +41,12 @@ class CourseSeeder extends Seeder
             ['name' => 'TTC'],
         ];
 
-        AcademySection::query()->select('id')->get()
-            ->map(function ($academySection) use ($courses) {
-                Arr::map($courses, function (array $value, string $key) use ($academySection) {
-                    return Course::query()->create($value + ['academy_section_id' => $academySection->id]);
-                });
+        AcademySection::query()->select('id')
+            ->each(function ($academySection) use ($courses) {
+                Arr::map(
+                    $courses,
+                    fn(array $value) => $academySection->courses()->create($value)
+                );
             });
-	}
+    }
 }

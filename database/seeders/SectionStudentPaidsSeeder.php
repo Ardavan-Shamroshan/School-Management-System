@@ -19,7 +19,6 @@ class SectionStudentPaidsSeeder extends Seeder {
 
 //		DB::unprepared(File::get(database_path('sql/section_student.sql')));
 
-
 		$paids = [
 			array(4553, 800000.000, '2024-02-12 16:30:24'),
 			array(6218, 960000.000, '2024-02-13 14:22:45'),

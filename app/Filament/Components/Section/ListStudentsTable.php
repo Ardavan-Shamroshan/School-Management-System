@@ -2,13 +2,19 @@
 
 namespace App\Filament\Components\Section;
 
+use App\Models\Academy\Section;
 use App\Models\Academy\Student;
 use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Table;
 use Filament\Forms;
+use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\On;
 use function App\Support\IRT;
 
@@ -16,16 +22,23 @@ trait ListStudentsTable
 {
     use InteractsWithTable;
 
+    protected function getTableQuery(): Builder|Relation|null
+    {
+        return Student::query()
+            ->whereHas(
+                'sections',
+                fn($query) => $query->where('sections.id', $this->filter)
+            );
+    }
+
+
     public function table(Table $table): Table
     {
         return $table
+            ->query($this->getTableQuery())
             ->modelLabel(__('Student'))
             ->pluralModelLabel(__('Students'))
-            ->query(Student::query()
-                ->whereHas(
-                    'sections',
-                    fn($query) => $query->where('sections.id', $this->filter)
-                ))
+            ->paginated(fn() => $this->getTableQuery()->count() > 25)
             ->columns([
                 Tables\Columns\TextColumn::make('name'),
                 Tables\Columns\TextColumn::make('mobile'),
@@ -44,7 +57,7 @@ trait ListStudentsTable
                     ->icon('heroicon-o-credit-card')
                     ->action($this->paymentAction())
                     ->state(function ($record) {
-                        
+
                         $student = $this->resolveStudentSection($record);
                         $paid    = collect($student?->pivot?->invoices)->sum('paid');
 
@@ -179,7 +192,7 @@ trait ListStudentsTable
         };
     }
 
-    #[On('refresh')]
+    #[On('resetTable')]
     public function refreshTable(): void
     {
         $this->resetTable();

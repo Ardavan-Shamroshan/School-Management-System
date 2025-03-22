@@ -2,26 +2,28 @@
 
 namespace App\Filament\Pages\Section;
 
+use App\Enums\ScheduleEnum;
 use App\Filament\Components\Section\AddStudentForm;
 use App\Filament\Components\Section\ListStudentsTable;
 use App\Filament\Pages\Dashboard;
 use App\Models\Academy\Course;
+use App\Models\Academy\Schedule;
 use App\Models\Academy\Section;
 use App\Models\Academy\Teacher;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
+use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Pages\Page;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Contracts\Support\Htmlable;
-use Livewire\{Attributes\Computed, Attributes\On, Attributes\Url, Attributes\Validate, WithPagination};
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Stringable;
 use Illuminate\Validation\Rule;
-use Filament\Forms;
+use Livewire\{Attributes\Computed, Attributes\On, Attributes\Url};
 use function App\Support\IRT;
 use function App\Support\saved;
 
@@ -37,7 +39,7 @@ class ListSections extends Page implements HasForms, HasTable, HasActions
     protected static bool    $shouldRegisterNavigation = false;
     public Course            $course;
     public ?Section          $section;
-    public int|string        $perPage                  = 8;
+    public int|string        $perPage                  = 10;
     public ?array            $data                     = [];
 
     #[Url(as: 'filter', keep: true)]
@@ -47,7 +49,7 @@ class ListSections extends Page implements HasForms, HasTable, HasActions
     {
         $this->course = $course;
 
-        if ($this->filter) {
+        if (isset($this->filter)) {
             $this->section = $this->course->sections()->find($this->filter) ?? null;
         }
 
@@ -56,6 +58,7 @@ class ListSections extends Page implements HasForms, HasTable, HasActions
 
         $this->form->fill($this->section->toArray());
         $this->addStudentForm->fill();
+
     }
 
     public function form(Form $form): Form
@@ -77,26 +80,13 @@ class ListSections extends Page implements HasForms, HasTable, HasActions
 
                         Forms\Components\Select::make('schedules')
                             ->multiple()
-                            ->options([
-                                'saturday'  => __('Saturday'),
-                                'sunday'    => __('Sunday'),
-                                'monday'    => __('Monday'),
-                                'tuesday'   => __('Tuesday'),
-                                'wednesday' => __('Wednesday'),
-                                'thursday'  => __('Thursday'),
-                                'friday'    => __('Friday'),
-                            ]),
+                            ->options(ScheduleEnum::class),
 
-                        Forms\Components\Select::make('start_time')
-                            ->native(false)
-                            ->options([
-                                0 => '09:00 - 10:30',
-                                1 => '10:30 - 12:00',
-                                2 => '17:00 - 18:30',
-                                3 => '18:30 - 20:00',
-                                4 => '20:00 - 21:30',
-                                5 => '21:30 - 23:00',
-                            ]),
+                        Forms\Components\Select::make('schedule_id')
+                            ->label(__('Start time'))
+                            ->options(Schedule::all()->pluck('time', 'id'))
+                            ->searchable()
+                            ->rule(Rule::exists('schedules', 'id')),
 
                         Forms\Components\TextInput::make('price')->placeholder('375000')
                             ->numeric()
@@ -109,7 +99,19 @@ class ListSections extends Page implements HasForms, HasTable, HasActions
                         Forms\Components\Actions\Action::make('search')->color('warning')->icon('heroicon-o-magnifying-glass')->hiddenLabel()->tooltip(__('Search'))->extraAttributes(['class' => 'icon-btn']),
                         Forms\Components\Actions\Action::make('list')->color('info')->icon('heroicon-o-clipboard-document-list')->hiddenLabel()->tooltip(__('List'))->extraAttributes(['class' => 'icon-btn']),
                         Forms\Components\Actions\Action::make('print')->icon('heroicon-o-printer')->hiddenLabel()->tooltip(__('Print'))->extraAttributes(['class' => 'icon-btn']),
-                        Forms\Components\Actions\Action::make('rename')->color('stone')->icon('heroicon-o-pencil-square')->hiddenLabel()->tooltip(__('Rename'))->extraAttributes(['class' => 'icon-btn']),
+                        Forms\Components\Actions\Action::make('rename')
+                            ->modalWidth('xl')
+                            ->form([
+                                Forms\Components\TextInput::make('name')
+                                    ->default($this->section->name)
+                            ])
+                            ->action(fn(array $data) => $this->section->update($data))
+                            ->color('stone')
+                            ->icon('heroicon-o-pencil-square')
+                            ->hiddenLabel()
+                            ->tooltip(__('Rename'))
+                            ->extraAttributes(['class' => 'icon-btn'])
+                        ,
                         Forms\Components\Actions\Action::make('remove')
                             ->color('danger')
                             ->icon('heroicon-o-trash')
@@ -149,14 +151,15 @@ class ListSections extends Page implements HasForms, HasTable, HasActions
     #[Computed]
     public function sections(): LengthAwarePaginator
     {
-        return $this->course->sections()->latest()->paginate($this->perPage);
+        return $this->course->sections()->latest()
+            ->paginate($this->perPage, pageName: 'sectionsPage');
     }
 
     public function createSectionAction(): Action
     {
         return Action::make('createSection')
             ->form([
-                Forms\Components\TextInput::make('name')->required(),
+                Forms\Components\TextInput::make('name'),
             ])
             ->action(function (array $data) {
                 $section = $this->course->sections()->create($data);
@@ -172,11 +175,11 @@ class ListSections extends Page implements HasForms, HasTable, HasActions
             ->label(__('Type section name'))
             ->hiddenLabel()
             ->icon('heroicon-o-plus')
-            ->modalWidth('lg')
+            ->modalWidth('xl')
             ->outlined()
             ->extraAttributes([
-                'class' => 'w-full h-28 !bg-transparent hover:scale-95 scale-75 hover:!bg-primary-50
-                !ring-0 !border-2 !border-dashed !text-primary-500 !border-primary-500 !rounded-lg
+                'class' => 'w-full min-h-28 max-h-28 !bg-transparent hover:scale-95 scale-75 hover:!bg-primary-50
+                !ring-0 !border-2 !border-dashed !border-primary-500
                 !transition-all duration-200 ease-in-out cursor-pointer !focus:outline-none'
             ]);
     }
@@ -191,7 +194,7 @@ class ListSections extends Page implements HasForms, HasTable, HasActions
         $this->form->fill($this->section->toArray());
         $this->addStudentForm->fill();
 
-        $this->dispatch('refresh');
+        $this->dispatch('resetTable');
     }
 
     protected function getForms(): array

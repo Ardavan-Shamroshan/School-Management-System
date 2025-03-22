@@ -16,11 +16,11 @@ if (! function_exists('App\Support\translate')) {
     {
         return __(
             str($key)
-                ->headline()
+                // ->headline()
+                ->replace(['-', '_'], ' ')
                 ->lower()
                 ->ucfirst()
-                ->before('.')
-                ->before('id')
+                ->remove(['.', '_id'])
                 ->squish()
                 ->value()
         );

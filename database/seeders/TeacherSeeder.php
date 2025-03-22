@@ -10,9 +10,6 @@ use Illuminate\Support\Facades\File;
 
 class TeacherSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         DB::unprepared(File::get(database_path('sql/teachers.sql')));

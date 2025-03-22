@@ -21,77 +21,35 @@ class ListUsers extends ListRecords
     public function getFormComponents(): array
     {
         return [
-            Section::make(
-                fn() => $this->record->exists ? __('Edit user') : __('Create user')
-            )
-                ->schema([
-                    Forms\Components\TextInput::make('name')->placeholder(__('Name'))->hiddenLabel()->prefixIcon('heroicon-o-user')->required(),
-                    Forms\Components\TextInput::make('email')->placeholder(__('Email'))->hiddenLabel()->prefixIcon('heroicon-o-envelope')->nullable()->email()->unique('users', 'email', ignorable: $this->record),
-                    Forms\Components\TextInput::make('mobile')->placeholder(__('Mobile'))->hiddenLabel()->prefixIcon('heroicon-o-phone')->nullable()->unique('users', 'mobile', ignorable: $this->record),
+                Forms\Components\TextInput::make('name')->placeholder(__('Name'))->hiddenLabel()->prefixIcon('heroicon-o-user')->required(),
+                Forms\Components\TextInput::make('email')->placeholder(__('Email'))->hiddenLabel()->prefixIcon('heroicon-o-envelope')->nullable()->email()->unique('users', 'email', ignorable: $this->record),
+                Forms\Components\TextInput::make('mobile')->placeholder(__('Mobile'))->hiddenLabel()->prefixIcon('heroicon-o-phone')->nullable()->unique('users', 'mobile', ignorable: $this->record),
 
-                    Forms\Components\TextInput::make('password')
-                        ->password()
-                        ->revealable()
-                        ->confirmed()
-                        ->required()
-                        ->prefixIcon('heroicon-o-key')
-                        ->hiddenLabel()
-                        ->placeholder(__('Password'))
-                        ->hidden(fn() => $this->record->exists),
+                Forms\Components\TextInput::make('password')
+                    ->password()
+                    ->revealable()
+                    ->confirmed()
+                    ->required()
+                    ->prefixIcon('heroicon-o-key')
+                    ->hiddenLabel()
+                    ->placeholder(__('Password'))
+                    ->hidden(fn() => $this->record->exists),
 
-                    Forms\Components\TextInput::make('password_confirmation')
-                        ->password()
-                        ->revealable()
-                        ->required()
-                        ->prefixIcon('heroicon-o-key')
-                        ->hiddenLabel()
-                        ->placeholder(__('Password confirmation'))
-                        ->hidden(fn() => $this->record->exists),
+                Forms\Components\TextInput::make('password_confirmation')
+                    ->password()
+                    ->revealable()
+                    ->required()
+                    ->prefixIcon('heroicon-o-key')
+                    ->hiddenLabel()
+                    ->placeholder(__('Password confirmation'))
+                    ->hidden(fn() => $this->record->exists),
 
-                    Forms\Components\Radio::make('role')
-                        ->options(UserRole::class)
-                        ->default(UserRole::USER)
-                        ->hintIcon('heroicon-o-shield-exclamation'),
-
-                    Forms\Components\Actions::make([
-                        Forms\Components\Actions\Action::make('save')->submit('save'),
-                        Forms\Components\Actions\Action::make('clear')
-                            ->color('danger')
-                            ->outlined()
-                            ->visible(fn() => $this->record->exists)
-                            ->action(fn() => $this->dispatch('record-cleared'))
-                    ])
-                ])
-                ->headerActions([
-                    Forms\Components\Actions\Action::make('reset_password')
-                        ->form([
-                            Forms\Components\TextInput::make('password')
-                                ->password()
-                                ->revealable()
-                                ->confirmed()
-                                ->required(),
-
-                            Forms\Components\TextInput::make('password_confirmation')
-                                ->password()
-                                ->revealable()
-                                ->required(),
-                        ])
-                        ->action(function (array $data) {
-                            $this->record
-                                ->forceFill(['password' => $data['password']])
-                                ->setRememberToken(Str::random(60));
-
-                            $this->record->save();
-
-                            Notification::make()->success()->title(__('Your password has been updated!'))->send();
-                        })
-                        ->icon('heroicon-o-arrow-path')
-                        ->color('danger')
-                        ->requiresConfirmation()
-                        ->visible(fn() => $this->record->exists)
-                ])
-
-        ];
+                Forms\Components\Radio::make('role')
+                    ->hiddenLabel(false)
+                    ->options(UserRole::class)
+                    ->default(UserRole::USER)
+                    ->hintIcon('heroicon-o-shield-exclamation'),
+            ];
     }
 
     public function getTableSchema(): array

@@ -83,7 +83,7 @@ class AppServiceProvider extends ServiceProvider
         Section::configureUsing(fn($component) => $component->compact());
         DatePicker::configureUsing(fn($component) => $component->default(now())->prefixIcon('heroicon-o-calendar-days'));
         DateTimePicker::configureUsing(fn($component) => $component->default(now())->jalali()->prefixIcon('heroicon-o-calendar-days'));
-        Column::configureUsing(fn($component) => $component->toggleable());
+        // Column::configureUsing(fn($component) => $component->toggleable());
         TextInput::configureUsing(fn($component) => $component->maxLength(255)->placeholder(translate($component->getName())));
         Select::configureUsing(fn($component) => $component->native(false)->searchable()->preload());
 

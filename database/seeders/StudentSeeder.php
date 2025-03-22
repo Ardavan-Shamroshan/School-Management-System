@@ -7,12 +7,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 
 class StudentSeeder extends Seeder {
-	/**
-	 * Run the database seeds.
-	 */
 	public function run(): void {
 		DB::unprepared(File::get(database_path('sql/sections.sql')));
 		DB::unprepared(File::get(database_path('sql/students.sql')));
-//		DB::unprepared(File::get(database_path('sql/section_student.sql')));
 	}
 }

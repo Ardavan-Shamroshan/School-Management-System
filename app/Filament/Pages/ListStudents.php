@@ -34,39 +34,25 @@ class ListStudents extends ListRecords
     public function getFormComponents(): array
     {
         return [
-            Section::make(
-                fn() => $this->record->exists ? __('Edit student') : __('Create student')
-            )
+            Forms\Components\TextInput::make('name')->prefixIcon('heroicon-o-user')->required(),
+            Forms\Components\TextInput::make('mobile')->prefixIcon('heroicon-o-phone'),
+
+            Forms\Components\Section::make(__('Optional information'))
+                ->collapsible()
                 ->schema([
-                    Forms\Components\TextInput::make('name')->prefixIcon('heroicon-o-user')->required(),
-                    Forms\Components\TextInput::make('mobile')->prefixIcon('heroicon-o-phone'),
+                    Forms\Components\TextInput::make('father_name')->prefixIcon('heroicon-o-user'),
+                    Forms\Components\TextInput::make('second_mobile')->placeholder(__('Mobile'))->label(__('Mobile'))->prefixIcon('heroicon-o-phone'),
+                    Forms\Components\TextInput::make('address')->prefixIcon('heroicon-o-map-pin'),
+                    Forms\Components\Select::make('gender')->options(GenderEnum::class)->prefixIcon('heroicon-o-identification'),
 
-                    Forms\Components\Section::make(__('Optional information'))
-                        ->collapsible()
+                    Forms\Components\Repeater::make('info')
+                        ->label(__('Extra information'))
                         ->schema([
-                            Forms\Components\TextInput::make('father_name')->prefixIcon('heroicon-o-user'),
-                            Forms\Components\TextInput::make('second_mobile')->placeholder(__('Mobile'))->label(__('Mobile'))->prefixIcon('heroicon-o-phone'),
-                            Forms\Components\TextInput::make('address')->prefixIcon('heroicon-o-map-pin'),
-                            Forms\Components\Select::make('gender')->options(GenderEnum::class)->prefixIcon('heroicon-o-identification'),
-
-                            Forms\Components\Repeater::make('info')
-                                ->label(__('Extra information'))
-                                ->schema([
-                                    Forms\Components\TextInput::make('key'),
-                                    Forms\Components\TextInput::make('value'),
-                                ])
-                                ->columns()
-                        ])->columns(1),
-
-                    Forms\Components\Actions::make([
-                        Forms\Components\Actions\Action::make('save')->submit('save'),
-                        Forms\Components\Actions\Action::make('clear')
-                            ->color('danger')
-                            ->outlined()
-                            ->visible(fn() => $this->record->exists)
-                            ->action(fn() => $this->dispatch('record-cleared'))
-                    ])
-                ])
+                            Forms\Components\TextInput::make('key'),
+                            Forms\Components\TextInput::make('value'),
+                        ])
+                        ->columns()
+                ])->columns(1),
         ];
     }
 

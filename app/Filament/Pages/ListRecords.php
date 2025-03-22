@@ -64,7 +64,21 @@ class ListRecords extends Page implements HasForms, HasTable
         Forms\Components\Field::configureUsing(fn(Forms\Components\Component $component) => $component->hiddenLabel());
 
         return $form
-            ->schema($this->getFormComponents())
+            ->schema([
+                Section::make(
+                    fn() => $this->record->exists ? __('Edit') : __('Create')
+                )
+                    ->schema($this->getFormComponents())
+                    ->headerActions($this->getSectionHeaderActions())
+                    ->footerActions([
+                        Forms\Components\Actions\Action::make('save')->submit('save'),
+                        Forms\Components\Actions\Action::make('clear')
+                            ->color('danger')
+                            ->outlined()
+                            ->visible(fn() => $this->record->exists)
+                            ->action(fn() => $this->dispatch('record-cleared'))
+                    ])
+            ])
             ->statePath('data');
     }
 
@@ -106,6 +120,38 @@ class ListRecords extends Page implements HasForms, HasTable
         $this->form->fill(
             $record?->toArray()
         );
+    }
+
+    public function getSectionHeaderActions(): array
+    {
+        return [
+            Forms\Components\Actions\Action::make('reset_password')
+                ->form([
+                    Forms\Components\TextInput::make('password')
+                        ->password()
+                        ->revealable()
+                        ->confirmed()
+                        ->required(),
+
+                    Forms\Components\TextInput::make('password_confirmation')
+                        ->password()
+                        ->revealable()
+                        ->required(),
+                ])
+                ->action(function (array $data) {
+                    $this->record
+                        ->forceFill(['password' => $data['password']])
+                        ->setRememberToken(Str::random(60));
+
+                    $this->record->save();
+
+                    Notification::make()->success()->title(__('Your password has been updated!'))->send();
+                })
+                ->icon('heroicon-o-arrow-path')
+                ->color('danger')
+                ->requiresConfirmation()
+                ->visible(fn() => $this->record->exists)
+        ];
     }
 
     public function getFilters(): array
