@@ -42,23 +42,20 @@ class ListSections extends Page implements HasForms, HasTable, HasActions
     public int|string        $perPage                  = 10;
     public ?array            $data                     = [];
 
-    #[Url(as: 'filter', keep: true)]
-    public int|string $filter;
+    #[Url(keep: true)]
+    public int|string $filter = '';
 
     public function mount(Course $course): void
     {
         $this->course = $course;
 
-        if (isset($this->filter)) {
-            $this->section = $this->course->sections()->find($this->filter) ?? null;
-        }
+        $this->section = $this->resolveSection($this->filter);
 
-        $this->section = $this->section ?? $this->course->sections()->latest()->first() ?? new Section;
-        $this->filter  = $this->filter ?? $this->section->id;
+        $this->filter = $this->resolveFilter();
 
-        $this->form->fill($this->section->toArray());
+        $this->form->fill($this->getSection()->toArray());
+
         $this->addStudentForm->fill();
-
     }
 
     public function form(Form $form): Form
@@ -68,7 +65,7 @@ class ListSections extends Page implements HasForms, HasTable, HasActions
         return $form
             ->schema([
                 Forms\Components\Section::make()
-                    ->heading(fn() => str(__('Section information'))->when($this->section->name, fn(Stringable $string) => $string->append(': ')->append($this->section->name)))
+                    ->heading(fn() => str(__('Section information'))->when($this->getSection()->name, fn(Stringable $string) => $string->append(': ')->append($this->getSection()->name)))
                     ->schema([
                         Forms\Components\Select::make('teacher_id')
                             ->label('Teacher')
@@ -96,22 +93,21 @@ class ListSections extends Page implements HasForms, HasTable, HasActions
                     ])
                     ->icon('heroicon-o-calendar-days')
                     ->headerActions([
-                        Forms\Components\Actions\Action::make('search')->color('warning')->icon('heroicon-o-magnifying-glass')->hiddenLabel()->tooltip(__('Search'))->extraAttributes(['class' => 'icon-btn']),
                         Forms\Components\Actions\Action::make('list')->color('info')->icon('heroicon-o-clipboard-document-list')->hiddenLabel()->tooltip(__('List'))->extraAttributes(['class' => 'icon-btn']),
                         Forms\Components\Actions\Action::make('print')->icon('heroicon-o-printer')->hiddenLabel()->tooltip(__('Print'))->extraAttributes(['class' => 'icon-btn']),
                         Forms\Components\Actions\Action::make('rename')
                             ->modalWidth('xl')
                             ->form([
                                 Forms\Components\TextInput::make('name')
-                                    ->default($this->section->name)
+                                    ->default($this->getSection()->name)
                             ])
-                            ->action(fn(array $data) => $this->section->update($data))
-                            ->color('stone')
+                            ->action(fn(array $data) => $this->getSection()->update($data))
+                            ->color('warning')
                             ->icon('heroicon-o-pencil-square')
                             ->hiddenLabel()
                             ->tooltip(__('Rename'))
-                            ->extraAttributes(['class' => 'icon-btn'])
-                        ,
+                            ->extraAttributes(['class' => 'icon-btn']),
+
                         Forms\Components\Actions\Action::make('remove')
                             ->color('danger')
                             ->icon('heroicon-o-trash')
@@ -121,12 +117,12 @@ class ListSections extends Page implements HasForms, HasTable, HasActions
                             ->extraAttributes(['class' => 'icon-btn'])
                             ->requiresConfirmation()
                             ->action(function () {
-                                $this->section->delete();
+                                $this->getSection()->delete();
 
                                 saved();
 
                                 $lastSection = $this->course->sections()->latest()->first();
-                                $this->dispatch('section-deleted', id: $lastSection->id);
+                                $this->dispatch('section-deleted', id: $lastSection?->id);
                             })
                     ])
                     ->footerActions([
@@ -142,16 +138,19 @@ class ListSections extends Page implements HasForms, HasTable, HasActions
     {
         $data = $this->form->getState();
 
-        $this->section->update($data);
+        $this->getSection()->update($data);
 
         saved();
     }
 
-    #[On('section-created'), On('section-updated'), On('section-deleted')]
+    #[On('section-created'), On('section-updated'), On('section-deleted'), On('students-assigned')]
     #[Computed]
     public function sections(): LengthAwarePaginator
     {
-        return $this->course->sections()->latest()
+        return $this
+            ->course
+            ->sections()
+            ->latest()
             ->paginate($this->perPage, pageName: 'sectionsPage');
     }
 
@@ -178,8 +177,9 @@ class ListSections extends Page implements HasForms, HasTable, HasActions
             ->modalWidth('xl')
             ->outlined()
             ->extraAttributes([
-                'class' => 'w-full min-h-28 max-h-28 !bg-transparent hover:scale-95 scale-75 hover:!bg-primary-50
-                !ring-0 !border-2 !border-dashed !border-primary-500
+                'class' => 'w-full min-h-28 max-h-28 dark:!border-primary-600
+                dark:hover:!bg-gray-900 !bg-transparent hover:scale-95 scale-75 hover:!bg-primary-100
+                !ring-0 !border-2 !border-dashed !border-primary-500 dark:!border-gray-600
                 !transition-all duration-200 ease-in-out cursor-pointer !focus:outline-none'
             ]);
     }
@@ -187,11 +187,12 @@ class ListSections extends Page implements HasForms, HasTable, HasActions
     #[On('section-created'), On('section-deleted')]
     public function changeSection(int|string|null $id): void
     {
-        $this->section = $this->course->sections()->find($id);
+        $this->section = $this->resolveSection($id);
 
-        $this->filter = $this->section->id;
+        $this->filter = $this->resolveFilter();
 
-        $this->form->fill($this->section->toArray());
+        $this->form->fill($this->getSection()->toArray());
+
         $this->addStudentForm->fill();
 
         $this->dispatch('resetTable');
@@ -219,5 +220,26 @@ class ListSections extends Page implements HasForms, HasTable, HasActions
             '2'                 => __($this->getTitle()),
             '3'                 => $this->section->teacher?->name ?? 'مدرس نامشخص'
         ];
+    }
+
+    public function getSection(): Section
+    {
+        return $this->section ?? new Section;
+    }
+
+    public function resolveSection(int|string|null $id): ?Section
+    {
+        return $this
+            ->course
+            ->sections()
+            ->where('id', $id)
+            ->orWhere('slug', $id)
+            ->firstOr(fn() => $this->course->sections()->latest()->first())
+            ?? new Section;
+    }
+
+    public function resolveFilter()
+    {
+        return $this->section->slug ?? $this->section->id;
     }
 }

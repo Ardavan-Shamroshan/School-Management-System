@@ -2,21 +2,22 @@
 
 namespace App\Filament\Components\Section;
 
+use App\Filament\Actions\AssignToCourseBulkAction;
+use App\Models\Academy\Course;
 use App\Models\Academy\Section;
 use App\Models\Academy\Student;
+use Blade;
 use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Table;
 use Filament\Forms;
-use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\HtmlString;
 use Livewire\Attributes\On;
 use function App\Support\IRT;
+use function App\Support\saved;
 
 trait ListStudentsTable
 {
@@ -27,10 +28,11 @@ trait ListStudentsTable
         return Student::query()
             ->whereHas(
                 'sections',
-                fn($query) => $query->where('sections.id', $this->filter)
+                fn($query) => $query
+                    ->where('sections.id', $this->filter)
+                    ->orWhere('sections.slug', $this->filter)
             );
     }
-
 
     public function table(Table $table): Table
     {
@@ -40,8 +42,8 @@ trait ListStudentsTable
             ->pluralModelLabel(__('Students'))
             ->paginated(fn() => $this->getTableQuery()->count() > 25)
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\TextColumn::make('mobile'),
+                Tables\Columns\TextColumn::make('name')->searchable(),
+                Tables\Columns\TextColumn::make('mobile')->searchable(),
                 Tables\Columns\TextColumn::make('payment')
                     ->color(function ($record) {
                         $student = $this->resolveStudentSection($record);
@@ -79,13 +81,29 @@ trait ListStudentsTable
 
                 Tables\Columns\TextColumn::make('note')
                     ->action($this->noteAction())
+                    ->placeholder(new HtmlString(Blade::render("<x-filament::link color='gray' tooltip='" . __('Write note') . "' icon='heroicon-o-pencil'>" . __('No data') . "</x-filament:link >")))
+                    ->color('gray')
                     ->state(fn($record) => $this->resolveStudentSection($record)?->pivot?->note)
                     ->icon('heroicon-o-pencil'),
             ])
             ->actions([
                 Tables\Actions\Action::make('invoice')->color('info')->icon('heroicon-o-document-text')->button()->hiddenLabel()->tooltip(__('Invoice'))->extraAttributes(['class' => 'icon-btn']),
                 Tables\Actions\Action::make('sendSms')->color('warning')->icon('heroicon-o-chat-bubble-bottom-center-text')->button()->hiddenLabel()->tooltip(__('Send sms'))->extraAttributes(['class' => 'icon-btn']),
-                Tables\Actions\Action::make('delete')->color('danger')->requiresConfirmation()->icon('heroicon-o-trash')->button()->hiddenLabel()->tooltip(__('Delete'))->extraAttributes(['class' => 'icon-btn']),
+                Tables\Actions\Action::make('delete')
+                    ->action(function ($record) {
+                        $record->sections()->detach($this->section->id);
+                        saved();
+                    })
+                    ->requiresConfirmation()
+                    ->color('danger')
+                    ->icon('heroicon-o-trash')
+                    ->button()
+                    ->hiddenLabel()
+                    ->tooltip(__('Delete'))
+                    ->extraAttributes(['class' => 'icon-btn']),
+            ])
+            ->bulkActions([
+                AssignToCourseBulkAction::make()->arguments(['section' => $this->section]),
             ]);
     }
 

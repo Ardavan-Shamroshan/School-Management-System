@@ -6,13 +6,10 @@ use App\Enums\ScheduleEnum;
 use App\Models\Academy\Pivot\SectionStudent;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Casts\AsEnumCollection;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Arr;
-use function App\Support\translate;
 
 class Section extends Model
 {
@@ -27,7 +24,6 @@ class Section extends Model
         'schedules',
         'start_date',
         'end_date',
-        // 'start_time',
         'price',
         'status',
     ];
@@ -49,15 +45,6 @@ class Section extends Model
             ],
         ];
     }
-
-    // public function schedulesBadge(): Attribute
-    // {
-    //     return Attribute::make(
-    //         get: fn() => Arr::map($this->schedules ?? [], function (string $value) {
-    //             return mb_substr(translate($value), 0, 1);
-    //         }),
-    //     );
-    // }
 
     public function course(): BelongsTo
     {

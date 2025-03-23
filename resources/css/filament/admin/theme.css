@@ -99,7 +99,7 @@ a.fi-btn-color-warning:not(.fi-btn-outlined) {
 }
 
 .fi-page > section > div > div.auto-cols-fr {
-    @apply !gap-y-2;
+    @apply !gap-y-3;
 }
 
 /*.fi-section-header-heading {*/

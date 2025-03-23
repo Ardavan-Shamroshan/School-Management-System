@@ -112,5 +112,9 @@
   "Paid": "پرداخت شده",
   "Even days": "روزهای زوج",
   "Odd days": "روزهای فرد",
-  "Everyday": "هرروز"
+  "Everyday": "هرروز",
+  "Write note": "نوشتن یادداشت",
+  "Assign to course": "فرستادن به دوره",
+  "Select course": "انتخاب دوره",
+  "Select section": "انتخاب سکشن"
 }

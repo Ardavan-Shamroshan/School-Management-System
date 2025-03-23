@@ -17,10 +17,11 @@
                     <label
                             for="{{ $item->id }}"
                             @class([
-                                'flex flex-wrap min-h-28 max-h-28 hover:!bg-primary-50 p-1 bg-white border border-gray-300
+                                'flex flex-wrap min-h-28 max-h-28 dark:!border-gray-800 dark:bg-gray-900 hover:!bg-primary-100
+                                dark:hover:!bg-primary-500 p-1 bg-white border border-gray-300
                                 rounded-lg transition-all duration-200 ease-in-out
                                 cursor-pointer focus:outline-none hover:border-primary-500 overflow-scroll no-scrollbar',
-                                'border-primary-500 border-2 !bg-primary-50' => $item->id == $section->id
+                                'border-primary-500 dark:!bg-primary-500 border-2 !bg-primary-100' => $item->id == $section?->id
                                 ])
                             wire:key="section-{{ $item->id }}"
                     >
@@ -89,5 +90,4 @@
     </div>
 
     <x-filament-actions::modals/>
-
 </x-filament-panels::page>

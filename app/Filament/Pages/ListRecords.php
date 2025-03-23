@@ -124,34 +124,7 @@ class ListRecords extends Page implements HasForms, HasTable
 
     public function getSectionHeaderActions(): array
     {
-        return [
-            Forms\Components\Actions\Action::make('reset_password')
-                ->form([
-                    Forms\Components\TextInput::make('password')
-                        ->password()
-                        ->revealable()
-                        ->confirmed()
-                        ->required(),
-
-                    Forms\Components\TextInput::make('password_confirmation')
-                        ->password()
-                        ->revealable()
-                        ->required(),
-                ])
-                ->action(function (array $data) {
-                    $this->record
-                        ->forceFill(['password' => $data['password']])
-                        ->setRememberToken(Str::random(60));
-
-                    $this->record->save();
-
-                    Notification::make()->success()->title(__('Your password has been updated!'))->send();
-                })
-                ->icon('heroicon-o-arrow-path')
-                ->color('danger')
-                ->requiresConfirmation()
-                ->visible(fn() => $this->record->exists)
-        ];
+        return [];
     }
 
     public function getFilters(): array

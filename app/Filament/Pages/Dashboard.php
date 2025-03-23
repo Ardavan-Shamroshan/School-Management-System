@@ -21,6 +21,7 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\HtmlString;
 use Livewire\Attributes\Url;
 
@@ -48,29 +49,31 @@ class Dashboard extends BaseDashboard implements HasForms, HasTable
                 Grid::make()
                     ->columns(1)
                     ->schema([
-                        ImageColumn::make('image')->height('100%')->width('100%')
-                            ->extraAttributes(['class' => 'rounded-md overflow-hidden transition-all duration-200 ease-in-out hover:scale-110']),
                         Stack::make([
+                            ImageColumn::make('image')
+                                ->height('100%')
+                                ->width('100%')
+                                ->defaultImageUrl(Vite::asset('resources/assets/images/placeholder.png'))
+                                ->extraAttributes(['class' => 'rounded-md overflow-hidden transition-all duration-200 ease-in-out scale-95 hover:scale-100']),
+
                             TextColumn::make('name')
                                 ->searchable()
-                                ->limit(15)
-                                ->wrap(false)
+                                // ->limit(10)
                                 ->tooltip(fn($state) => $state)
-                                ->extraAttributes(['class' => 'justify-center']),
+                                ->extraAttributes(['class' => 'justify-center flex-nowrap']),
+                        ])->space(3)
+                        // TextColumn::make('academySection.name')
+                        //     ->searchable()
+                        //     ->limit(15)
+                        //     ->wrap(false)
+                        //     ->tooltip(fn($state) => $state)
+                        //     ->extraAttributes(['class' => 'justify-center']),
 
-                            // TextColumn::make('academySection.name')
-                            //     ->searchable()
-                            //     ->limit(15)
-                            //     ->wrap(false)
-                            //     ->tooltip(fn($state) => $state)
-                            //     ->extraAttributes(['class' => 'justify-center']),
-
-                            TextColumn::make('enroll')
-                                ->default(fn() => new HtmlString(
-                                    Blade::render('<x-filament::button href="#" tag="a">' . __('Enroll') . '</x-filament::button>')
-                                ))
-                                ->extraAttributes(['class' => 'justify-center'])
-                        ])
+                        // TextColumn::make('enroll')
+                        //     ->default(fn() => new HtmlString(
+                        //         Blade::render('<x-filament::button href="#" tag="a">' . __('Enroll') . '</x-filament::button>')
+                        //     ))
+                        //     ->extraAttributes(['class' => 'justify-center'])
                     ])
             ])
             ->recordUrl(fn($record) => ListSections::getUrl(['course' => $record]))

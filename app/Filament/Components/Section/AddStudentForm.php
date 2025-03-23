@@ -35,7 +35,7 @@ trait AddStudentForm
                             ->live()
                             ->hint(fn($state) => IRT($state)),
 
-                        Forms\Components\TextInput::make('note')->hintIcon('heroicon-o-pencil')
+                        Forms\Components\TextInput::make('note')->prefixIcon('heroicon-o-pencil')
                     ])
                     ->icon('heroicon-o-user')
                     ->footerActions([
