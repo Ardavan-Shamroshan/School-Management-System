@@ -10,6 +10,7 @@ use Filament\Forms\Components\ToggleButtons;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Resources\Components\Tab;
 use Filament\Resources\Concerns\HasTabs;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Tables\Columns\TextColumn;
@@ -20,9 +21,8 @@ use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Blade;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Vite;
-use Illuminate\Support\HtmlString;
 use Livewire\Attributes\Url;
 
 class Dashboard extends BaseDashboard implements HasForms, HasTable
@@ -45,6 +45,8 @@ class Dashboard extends BaseDashboard implements HasForms, HasTable
             ->contentGrid([
                 'xl' => 7
             ])
+            ->modelLabel(__('Course'))
+            ->pluralModelLabel(__('Courses'))
             ->columns([
                 Grid::make()
                     ->columns(1)
@@ -57,10 +59,15 @@ class Dashboard extends BaseDashboard implements HasForms, HasTable
                                 ->extraAttributes(['class' => 'rounded-md overflow-hidden transition-all duration-200 ease-in-out scale-95 hover:scale-100']),
 
                             TextColumn::make('name')
-                                ->searchable()
+                                // ->searchable()
                                 // ->limit(10)
                                 ->tooltip(fn($state) => $state)
                                 ->extraAttributes(['class' => 'justify-center flex-nowrap']),
+
+                            TextColumn::make('academySection.type')
+                                ->badge()
+                                ->extraAttributes(['class' => 'justify-center flex-nowrap']),
+
                         ])->space(3)
                         // TextColumn::make('academySection.name')
                         //     ->searchable()
@@ -118,8 +125,8 @@ class Dashboard extends BaseDashboard implements HasForms, HasTable
                 //     ->default(AcademySection::query()->first()->id)
                 //     ->native(false)
                 //     ->preload()
-            ])
-            ->filtersFormWidth(MaxWidth::Small)
+            ], layout: Tables\Enums\FiltersLayout::Modal)
+            ->filtersFormWidth('sm')
             ->actions([])
             ->bulkActions([]);
     }
@@ -137,25 +144,26 @@ class Dashboard extends BaseDashboard implements HasForms, HasTable
         ];
     }
 
+
     // public function getTabs(): array
     // {
-
+    //
     //     $tabs = [];
-
-    //     foreach (AcademySection::all() as $academySection) {
-    //         $tabs[$academySection->id] = Tab::make($academySection->name)
-    //             ->badge(Course::query()->whereBelongsTo($academySection)->count())
-    //             ->modifyQueryUsing(fn($query) => $query->whereBelongsTo($academySection));
+    //
+    //     foreach (AcademySectionType::cases() as $type) {
+    //         $tabs[$type->name] = Tab::make($type->getLabel())
+    //             ->badge(Course::query()->whereHas('academySection', fn($query) => $query->where('type', $type))->count())
+    //             ->modifyQueryUsing(fn($query) => $query->whereHas('academySection', fn($query) => $query->where('type', $type)));
     //     }
-
+    //
     //     return $tabs;
     // }
 
     // public function getDefaultActiveTab(): string | int | null
     // {
-    //     return AcademySection::query()->first()->id;
+    //     return AcademySectionType::BOYS->name;
     // }
-
+    //
     // protected function makeTable(): Table
     // {
     //     return $this->makeBaseTable()
@@ -164,46 +172,46 @@ class Dashboard extends BaseDashboard implements HasForms, HasTable
     //         ->recordAction(function (Model $record, Table $table): ?string {
     //             foreach (['view', 'edit'] as $action) {
     //                 $action = $table->getAction($action);
-
+    //
     //                 if (! $action) {
     //                     continue;
     //                 }
-
+    //
     //                 $action->record($record);
-
+    //
     //                 if ($action->isHidden()) {
     //                     continue;
     //                 }
-
+    //
     //                 if ($action->getUrl()) {
     //                     continue;
     //                 }
-
+    //
     //                 return $action->getName();
     //             }
-
+    //
     //             return null;
     //         })
     //         ->recordUrl($this->getTableRecordUrlUsing() ?? function (Model $record, Table $table): ?string {
     //             foreach (['view', 'edit'] as $action) {
     //                 $action = $table->getAction($action);
-
+    //
     //                 if (! $action) {
     //                     continue;
     //                 }
-
+    //
     //                 $action->record($record);
-
+    //
     //                 if ($action->isHidden()) {
     //                     continue;
     //                 }
-
+    //
     //                 $url = $action->getUrl();
-
+    //
     //                 if (! $url) {
     //                     continue;
     //                 }
-
+    //
     //                 return $url;
     //             }
     //             return null;

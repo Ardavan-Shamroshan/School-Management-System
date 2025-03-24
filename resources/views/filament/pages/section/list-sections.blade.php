@@ -18,8 +18,8 @@
                             for="{{ $item->id }}"
                             @class([
                                 'flex flex-wrap min-h-28 max-h-28 dark:!border-gray-800 dark:bg-gray-900 hover:!bg-primary-100
-                                dark:hover:!bg-primary-500 p-1 bg-white border border-gray-300
-                                rounded-lg transition-all duration-200 ease-in-out
+                                dark:hover:!bg-primary-500 p-1 bg-white border hover:border-2 border-gray-300
+                                rounded-lg transition-all duration-100 ease-in-out
                                 cursor-pointer focus:outline-none hover:border-primary-500 overflow-scroll no-scrollbar',
                                 'border-primary-500 dark:!bg-primary-500 border-2 !bg-primary-100' => $item->id == $section?->id
                                 ])
@@ -27,14 +27,22 @@
                     >
                         <div class="flex flex-col justify-center mx-auto text-center gap-1">
                             <span @class(['text-sm', 'text-gray-500' => ! $item->name])>
-                            {{ $item->name ?? __('No data') }}
+                                {{ $item->name ?? __('No data') }}
+                            </span>
+
+                            @if($item->students->count())
+                                <span class="text-xs">
+                                    {{ str($item->students->count())->append(' ')->append(__('Student')) }}
+                            </span>
+                            @endif
+
+                            <span class="text-sm">
+                                {{ $item->teacher?->name }}
                             </span>
 
                             <span class="text-sm">
-                            {{ $item->teacher?->name }}
+                                {{ $item->schedule?->time ?? '' }}
                             </span>
-
-                            <span class="text-sm">{{ $item->schedule?->time ?? '' }}</span>
 
                             <span class="flex flex-row flex-wrap justify-start gap-1">
                                 @foreach($item->schedules ?? [] as $badge)

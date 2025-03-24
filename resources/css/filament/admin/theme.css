@@ -85,6 +85,9 @@ a.fi-btn-color-warning:not(.fi-btn-outlined) {
 .fi-header div:first-child {
     @apply flex flex-row-reverse gap-x-3 items-center
 }
+.fi-header div:nth-child(2) {
+    @apply !mt-0
+}
 
 .fi-header div:first-child h1 {
     @apply !text-2xl sm:text-2xl
@@ -100,6 +103,11 @@ a.fi-btn-color-warning:not(.fi-btn-outlined) {
 
 .fi-page > section > div > div.auto-cols-fr {
     @apply !gap-y-3;
+}
+
+.fi-global-search-results-ctn {
+    @apply top-11 max-w-[35rem]
+
 }
 
 /*.fi-section-header-heading {*/

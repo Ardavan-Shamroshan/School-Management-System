@@ -99,7 +99,10 @@ class ListSections extends Page implements HasForms, HasTable, HasActions
                             ->modalWidth('xl')
                             ->form([
                                 Forms\Components\TextInput::make('name')
-                                    ->default($this->getSection()->name)
+                                    ->default(
+                                        $this->getSection()->name
+                                        ?? $this->course->sections()->latest()->count() + 1
+                                    )
                             ])
                             ->action(fn(array $data) => $this->getSection()->update($data))
                             ->color('warning')
@@ -158,7 +161,8 @@ class ListSections extends Page implements HasForms, HasTable, HasActions
     {
         return Action::make('createSection')
             ->form([
-                Forms\Components\TextInput::make('name'),
+                Forms\Components\TextInput::make('name')
+                    ->default($this->course->sections()->latest()->count() + 1),
             ])
             ->action(function (array $data) {
                 $section = $this->course->sections()->create($data);
@@ -240,6 +244,6 @@ class ListSections extends Page implements HasForms, HasTable, HasActions
 
     public function resolveFilter()
     {
-        return $this->section->slug ?? $this->section->id;
+        return $this->section->slug ?? $this->section->id ?? $this->filter;
     }
 }

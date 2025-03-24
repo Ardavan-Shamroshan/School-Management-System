@@ -116,5 +116,8 @@
   "Write note": "نوشتن یادداشت",
   "Assign to course": "فرستادن به دوره",
   "Select course": "انتخاب دوره",
-  "Select section": "انتخاب سکشن"
+  "Select section": "انتخاب سکشن",
+  "Last section": "آخرین سکشن",
+  "Last course": "آخرین دوره",
+  "Go to section": "رفتن به سکشن"
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models\Academy;
 
+use App\Filament\Resources\Academy\StudentResource\Pages\ListStudents;
 use App\Models\Academy\Pivot\SectionStudent;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
@@ -16,7 +18,13 @@ class Student extends Model
 {
     use HasFactory, SoftDeletes, Notifiable;
 
-    protected $fillable = ['name', 'father_name', 'mobile', 'second_mobile', 'gender', 'address', 'info', 'created_by', 'updated_by'];
+    protected                $fillable             = ['name', 'father_name', 'mobile', 'second_mobile', 'gender', 'address', 'info', 'created_by', 'updated_by'];
+    protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getGlobalSearchResultUrl(Model $record): string
+    {
+        return ListStudents::getUrl();
+    }
 
     protected function casts(): array
     {
