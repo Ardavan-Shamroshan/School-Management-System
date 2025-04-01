@@ -13,8 +13,8 @@ class AcademySectionSeeder extends Seeder
     public function run(): void
     {
         AcademySection::query()->insert([
-            ['name' => 'Boys section', 'slug' => 'boys-section', 'type' => AcademySectionType::BOYS],
-            ['name' => 'Girls section', 'slug' => 'girls-section', 'type' => AcademySectionType::GIRLS]
+            ['name' => 'Boys section', 'slug' => 'boys-section', 'type' => AcademySectionType::BOYS, 'image' => 'photos/boy.webp'],
+            ['name' => 'Girls section', 'slug' => 'girls-section', 'type' => AcademySectionType::GIRLS, 'image' => 'photos/girl.webp']
         ]);
     }
 }

@@ -2,17 +2,21 @@
 
 namespace App\Filament\Pages;
 
+use App\Forms\Components\ImageRadioGroup;
 use App\Enums\AcademySectionType;
 use App\Filament\Pages\Section\ListSections;
+use App\Models\Academy\AcademySection;
 use App\Models\Academy\Course;
 use BackedEnum;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\ToggleButtons;
+use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Resources\Components\Tab;
 use Filament\Resources\Concerns\HasTabs;
-use Filament\Support\Enums\MaxWidth;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables;
 use Filament\Tables\Columns\ImageColumn;
@@ -21,7 +25,6 @@ use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Vite;
 use Livewire\Attributes\Url;
 
@@ -35,7 +38,8 @@ class Dashboard extends BaseDashboard implements HasForms, HasTable
     protected static string $view = 'filament.pages.dashboard';
 
     #[Url(as: 'tableFilters', keep: true, except: '')]
-    public $filters;
+    public        $filters;
+    public ?array $data = [];
 
     public function table(Table $table): Table
     {
@@ -43,7 +47,7 @@ class Dashboard extends BaseDashboard implements HasForms, HasTable
             ->query($this->getTableQuery())
             ->defaultPaginationPageOption(50)
             ->contentGrid([
-                'xl' => 7
+                'xl' => 6
             ])
             ->modelLabel(__('Course'))
             ->pluralModelLabel(__('Courses'))
@@ -55,6 +59,7 @@ class Dashboard extends BaseDashboard implements HasForms, HasTable
                             ImageColumn::make('image')
                                 ->height('100%')
                                 ->width('100%')
+                                ->tooltip(fn($record) => $record->name)
                                 ->defaultImageUrl(Vite::asset('resources/assets/images/placeholder.png'))
                                 ->extraAttributes(['class' => 'rounded-md overflow-hidden transition-all duration-200 ease-in-out scale-95 hover:scale-100']),
 
@@ -64,33 +69,26 @@ class Dashboard extends BaseDashboard implements HasForms, HasTable
                                 ->tooltip(fn($state) => $state)
                                 ->extraAttributes(['class' => 'justify-center flex-nowrap']),
 
-                            TextColumn::make('academySection.type')
-                                ->badge()
-                                ->extraAttributes(['class' => 'justify-center flex-nowrap']),
+                            // TextColumn::make('academySection.type')
+                            //     ->badge()
+                            //     ->extraAttributes(['class' => 'justify-center flex-nowrap']),
 
                         ])->space(3)
-                        // TextColumn::make('academySection.name')
-                        //     ->searchable()
-                        //     ->limit(15)
-                        //     ->wrap(false)
-                        //     ->tooltip(fn($state) => $state)
-                        //     ->extraAttributes(['class' => 'justify-center']),
-
-                        // TextColumn::make('enroll')
-                        //     ->default(fn() => new HtmlString(
-                        //         Blade::render('<x-filament::button href="#" tag="a">' . __('Enroll') . '</x-filament::button>')
-                        //     ))
-                        //     ->extraAttributes(['class' => 'justify-center'])
                     ])
             ])
             ->recordUrl(fn($record) => ListSections::getUrl(['course' => $record]))
-            ->persistFiltersInSession()
+            // ->persistFiltersInSession()
             ->filters([
                 Tables\Filters\Filter::make('academy_section')
                     ->form([
                         ToggleButtons::make('type')
                             ->options(AcademySectionType::class)
-                            ->default(AcademySectionType::BOYS)
+                            // ->default(AcademySectionType::BOYS)
+                            ->default(
+                                fn() => $this->filters
+                                    ? AcademySectionType::getBy($this->filters)
+                                    : AcademySectionType::BOYS
+                            )
                             ->inline(),
                     ])
                     ->query(function (Builder $query, array $data) {
@@ -120,15 +118,39 @@ class Dashboard extends BaseDashboard implements HasForms, HasTable
                         return str(__('Academy section'))->append(': ')->append($type->getLabel());
                     }),
 
-                // SelectFilter::make('academySection')
-                //     ->relationship('academySection', 'name')
-                //     ->default(AcademySection::query()->first()->id)
-                //     ->native(false)
-                //     ->preload()
             ], layout: Tables\Enums\FiltersLayout::Modal)
+            ->deferFilters(false)
             ->filtersFormWidth('sm')
             ->actions([])
             ->bulkActions([]);
+    }
+
+
+    public function filtersForm(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Section::make()->heading(__('Select academy section'))->schema([
+                    ImageRadioGroup::make('academy_section')
+                        ->live()
+                        ->options(fn() => AcademySection::pluck('image', 'type')->toArray())
+                        ->columns()
+                        ->columnSpanFull()
+                        ->default($this->filters)
+                        ->afterStateUpdated(function ($state) {
+                            $this->filters = $state;
+                            $this->resetTable();
+                        })
+                ])
+            ])
+            ->statePath('data');
+    }
+
+    protected function getForms(): array
+    {
+        return [
+            'filtersForm'
+        ];
     }
 
     protected function getTableQuery(): Builder
@@ -217,4 +239,5 @@ class Dashboard extends BaseDashboard implements HasForms, HasTable
     //             return null;
     //         });
     // }
+
 }

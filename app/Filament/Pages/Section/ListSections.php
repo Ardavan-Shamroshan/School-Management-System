@@ -219,7 +219,7 @@ class ListSections extends Page implements HasForms, HasTable, HasActions
     {
         return [
             Dashboard::getUrl() => __('Dashboard'),
-            '0'                 => $this->course->academySection->name,
+            '0'                 => $this->course->academySection->type->getLabel(),
             '1'                 => $this->course->name,
             '2'                 => __($this->getTitle()),
             '3'                 => $this->section->teacher?->name ?? 'مدرس نامشخص'

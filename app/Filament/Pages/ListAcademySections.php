@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use Alkoumi\FilamentImageRadioButton\Forms\Components\ImageRadioGroup;
 use App\Enums\AcademySectionType;
 use App\Models\Academy\AcademySection;
 use Filament\Forms\Components\Section;
