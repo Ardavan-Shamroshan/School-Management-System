@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             ScheduleSeeder::class,
 
+            SettingSeeder::class,
             AcademySectionSeeder::class,
             CourseSeeder::class,
             TeacherSeeder::class,

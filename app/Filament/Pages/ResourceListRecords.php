@@ -77,6 +77,8 @@ class ResourceListRecords extends Page implements HasForms, HasTable
             ->defaultPaginationPageOption(50)
             ->columns($this->getTableSchema())
             ->filters($this->getFilters())
+            ->modelLabel(static::getResource()::getModelLabel())
+            ->pluralModelLabel(static::getResource()::getPluralModelLabel())
             ->actions([
                 Actions\Action::make('edit')
                     ->icon('heroicon-o-pencil-square')

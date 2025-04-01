@@ -9,6 +9,7 @@
         "php": "^8.2",
         "ariaieboy/filament-jalali": "^1.1.0",
         "cviebrock/eloquent-sluggable": "^12.0",
+        "devonab/filament-easy-footer": "^1.0",
         "filament/filament": "^3.3",
         "hekmatinasser/verta": "^8.5",
         "laravel/framework": "^12.0",

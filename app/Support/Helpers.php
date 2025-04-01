@@ -103,11 +103,13 @@ if (! function_exists('setting')) {
             return null;
         }
 
+        // if (Schema::hasColumn($column, 'settings')) {
         $setting = Setting::query()
             ->select($column)
-            ->first();
+            ->first()?->$column;
+        // }
 
-        return $setting?->$column;
+        return $setting ?? null;
     }
 }
 
