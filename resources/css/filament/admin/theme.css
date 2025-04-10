@@ -1,6 +1,5 @@
-@import '/vendor/filament/filament/resources/css/theme.css';
-@import '../../font.css';
-
+@import "/vendor/filament/filament/resources/css/theme.css";
+@import "../../font.css";
 
 @config 'tailwind.config.js';
 
@@ -21,19 +20,19 @@
 }
 
 .fi-main {
-    @apply max-w-full
+    @apply max-w-full;
 }
 
 .fi-ta-ctn .py-4 {
-    @apply !py-[0.5rem]
+    @apply !py-[0.5rem];
 }
 
 .fi-btn {
-    @apply !rounded-md
+    @apply !rounded-md;
 }
 
 .fi-btn:not(.icon-btn) {
-    @apply !px-[1.25rem] !py-[.175rem]
+    @apply !px-[1.25rem] !py-[.175rem];
 }
 
 .icon-btn {
@@ -75,31 +74,27 @@ a.fi-btn-color-warning:not(.fi-btn-outlined) {
 }
 
 .fi-topbar {
-    @apply hidden
+    @apply hidden;
 }
 
 .fi-sidebar-header {
-    @apply !bg-transparent !shadow-none !ring-0
+    @apply !bg-transparent !shadow-none !ring-0;
 }
 
 .fi-header div:first-child {
-    @apply flex flex-row-reverse gap-x-3 items-center
+    @apply flex flex-row-reverse gap-x-3 items-center;
 }
 
 .fi-header div:nth-child(2) {
-    @apply !mt-0
+    @apply !mt-0;
 }
 
 .fi-header div:first-child h1 {
-    @apply !text-2xl sm:text-2xl
+    @apply !text-2xl sm:text-2xl;
 }
 
 .fi-breadcrumbs {
-    @apply !mb-0
-}
-
-.fi-section:has(.primary-header) > .fi-section-header {
-    @apply bg-green-400 rounded-t-xl
+    @apply !mb-0;
 }
 
 .fi-page > section > div > div.auto-cols-fr {
@@ -107,14 +102,32 @@ a.fi-btn-color-warning:not(.fi-btn-outlined) {
 }
 
 .fi-global-search-results-ctn {
-    @apply top-11 max-w-[35rem]
-
+    @apply top-11 max-w-[35rem];
 }
 
-.fi-dashboard-page > section:first-child {
-    @apply !py-3 !gap-y-3
+.fi-page > section:first-child {
+    @apply !py-2 !gap-y-3;
 }
 
-/*.fi-section-header-heading {*/
-/*    @apply text-white*/
-/*}*/
+.fi-section {
+    @apply overflow-hidden;
+}
+
+.primary-header > .fi-section-header {
+    @apply bg-primary-400;
+}
+
+.green-header > .fi-section-header {
+    @apply bg-green-400;
+}
+
+.primary-header svg,
+.green-header svg,
+.primary-header h3,
+.green-header h3 {
+    @apply !text-white;
+}
+
+.fi-global-search-results-ctn {
+    @apply !max-h-[40rem];
+}

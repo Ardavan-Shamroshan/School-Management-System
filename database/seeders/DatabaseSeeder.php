@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             TeacherSeeder::class,
             StudentSeeder::class,
 
-            // SectionStudentPaidsSeeder::class,
+            SectionStudentPaidsSeeder::class,
         ]);
     }
 }

@@ -20,6 +20,7 @@ use Filament\Tables\Table;
 use Illuminate\Support\ServiceProvider;
 use Filament\Tables;
 use function App\Support\translate;
+use Filament\Support\Facades\FilamentView;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -31,6 +32,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureComponents();
+
+        // $this->changeDirection();
 
         FilamentColor::register([
             'fuchsia' => Color::Fuchsia,
@@ -92,5 +95,13 @@ class AppServiceProvider extends ServiceProvider
         //         $component->jalaliDateTime();
         //     }
         // });
+    }
+
+    protected function changeDirection(): void
+    {   
+        FilamentView::registerRenderHook(
+            'panels::head.start',
+            fn () => view('filament.direction-override'),
+        );
     }
 }

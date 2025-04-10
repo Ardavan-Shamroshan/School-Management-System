@@ -22,6 +22,7 @@ trait AddStudentForm
         return $form
             ->schema([
                 Forms\Components\Section::make()
+                ->extraAttributes(['class' => 'green-header'])
                     ->heading(fn() => str(__('Add student')))
                     ->schema([
                         Forms\Components\TextInput::make('name')->label('Name')->reactive()->required()->prefixIcon('heroicon-o-user'),

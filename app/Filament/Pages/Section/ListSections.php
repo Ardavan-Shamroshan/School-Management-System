@@ -65,6 +65,7 @@ class ListSections extends Page implements HasForms, HasTable, HasActions
         return $form
             ->schema([
                 Forms\Components\Section::make()
+                    ->extraAttributes(['class' => 'primary-header'])
                     ->heading(fn() => str(__('Section information'))->when($this->getSection()->name, fn(Stringable $string) => $string->append(': ')->append($this->getSection()->name)))
                     ->schema([
                         Forms\Components\Select::make('teacher_id')
@@ -101,7 +102,7 @@ class ListSections extends Page implements HasForms, HasTable, HasActions
                                 Forms\Components\TextInput::make('name')
                                     ->default(
                                         $this->getSection()->name
-                                        ?? $this->course->sections()->latest()->count() + 1
+                                            ?? $this->course->sections()->latest()->count() + 1
                                     )
                             ])
                             ->action(fn(array $data) => $this->getSection()->update($data))

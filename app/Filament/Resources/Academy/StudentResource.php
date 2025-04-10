@@ -40,7 +40,14 @@ class StudentResource extends Resource
     {
         return [
             Action::make('goToSection')
-                ->url(ListSections::getUrl(['course' => $record->lastSection()->course, 'filter' => $record->lastSection()->slug]))
+                ->visible(fn($record) => $record?->lastSection())
+                ->url(function ($record) {
+                    if ($record?->lastSection()) {
+                        return ;
+                    }
+
+                    return null;
+                })
                 ->link()
                 ->icon('heroicon-m-arrow-long-left')
                 ->iconPosition('after')

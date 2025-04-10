@@ -11,8 +11,6 @@ use BackedEnum;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -73,7 +71,8 @@ class Dashboard extends BaseDashboard implements HasForms, HasTable
                             //     ->badge()
                             //     ->extraAttributes(['class' => 'justify-center flex-nowrap']),
 
-                        ])->space(3)
+                        ])
+                        
                     ])
             ])
             ->recordUrl(fn($record) => ListSections::getUrl(['course' => $record]))
